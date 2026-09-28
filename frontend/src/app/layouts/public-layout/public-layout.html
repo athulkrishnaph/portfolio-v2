@@ -1,0 +1,11 @@
+<a class="skip-link" href="#main-content">Skip to content</a>
+<app-navbar />
+<main id="main-content" class="public-main" tabindex="-1">
+  <router-outlet />
+</main>
+<app-footer />
+<!-- The chat assistant loads once the page is idle, so it never slows
+     down the first render (it is a separate lazy-loaded chunk). -->
+@defer (on idle) {
+  <app-chat-widget />
+}

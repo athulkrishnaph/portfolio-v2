@@ -82,6 +82,10 @@ func registerRoutes(mux *http.ServeMux, deps Deps) {
 		mux.Handle("GET "+storage.PublicPath, fs.Handler())
 	}
 
+	// Portfolio chatbot (RAG + Gemini), see chat.go. Optional: it reports
+	// itself as disabled when GEMINI_API_KEY is not set.
+	registerChat(mux, deps, requireAuth)
+
 	// Production: also serve the built Angular app (see static.go).
 	if cfg.StaticDir != "" {
 		mux.Handle("GET /", spaHandler(cfg.StaticDir))

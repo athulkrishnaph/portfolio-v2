@@ -13,46 +13,7 @@ import { FormPageShell } from '../shared/form-page-shell';
 @Component({
   selector: 'app-certificate-form',
   imports: [ReactiveFormsModule, FormPageShell, FormField, FormInput, ImageUpload],
-  template: `
-    <app-form-page-shell
-      [title]="isEdit ? 'Edit certificate' : 'New certificate'"
-      backUrl="/admin/certificates"
-      formId="certificate-form"
-      [loading]="loading()"
-      [loadError]="loadError()"
-      [saving]="saving()"
-      [errors]="formErrors()"
-      (retry)="load()"
-      (cancelled)="cancel()"
-    >
-      <form id="certificate-form" class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-        <app-form-field label="Title">
-          <input appInput class="input" formControlName="title" />
-        </app-form-field>
-
-        <div class="form-row">
-          <app-form-field label="Issuing organization">
-            <input appInput class="input" formControlName="issuer" />
-          </app-form-field>
-          <app-form-field label="Issue date">
-            <input appInput class="input" type="date" formControlName="issueDate" />
-          </app-form-field>
-        </div>
-
-        <app-form-field label="Credential URL" hint="Link where the certificate can be verified.">
-          <input appInput class="input" type="url" formControlName="credentialUrl" placeholder="https://…" />
-        </app-form-field>
-
-        <app-form-field label="Image" [control]="form.controls.imageUrl">
-          <app-image-upload formControlName="imageUrl" />
-        </app-form-field>
-
-        <app-form-field label="Display order" hint="Lower numbers are shown first.">
-          <input appInput class="input" type="number" min="0" formControlName="displayOrder" />
-        </app-form-field>
-      </form>
-    </app-form-page-shell>
-  `,
+  templateUrl: './certificate-form.html',
 })
 export class CertificateForm extends EntityFormPage<Certificate, CertificateInput> {
   private readonly fb = inject(NonNullableFormBuilder);

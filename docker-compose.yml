@@ -8,7 +8,10 @@
 # Values like ${JWT_SECRET} are read from the .env file next to this file.
 services:
   postgres:
-    image: postgres:17-alpine
+    # PostgreSQL 17 with the pgvector extension (needed by the AI assistant).
+    # Switching an existing volume from postgres:17-alpine: see README →
+    # "Docker and pgvector" (run REINDEX once because of the OS change).
+    image: pgvector/pgvector:pg17
     container_name: portfolio-postgres
     restart: unless-stopped
     environment:
@@ -41,6 +44,13 @@ services:
       PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8080}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:8080}
       TRUST_PROXY: ${TRUST_PROXY:-false}
+      # AI assistant (optional; disabled when GEMINI_API_KEY is empty).
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.5-flash-lite}
+      GEMINI_EMBEDDING_MODEL: ${GEMINI_EMBEDDING_MODEL:-gemini-embedding-2}
+      GEMINI_EMBEDDING_DIMENSIONS: ${GEMINI_EMBEDDING_DIMENSIONS:-768}
+      RAG_MIN_SIMILARITY: ${RAG_MIN_SIMILARITY:-0.6}
+      CHAT_DAILY_LIMIT: ${CHAT_DAILY_LIMIT:-300}
     ports:
       - "8080:8080"
     volumes:

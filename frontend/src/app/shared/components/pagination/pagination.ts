@@ -13,87 +13,8 @@ import { Icon } from '../icon/icon';
   selector: 'app-pagination',
   imports: [Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    @if (pageCount() > 1) {
-      <nav class="pagination" aria-label="Pagination">
-        <button
-          type="button"
-          class="btn btn--ghost btn--sm"
-          [disabled]="page() === 1"
-          (click)="goTo(page() - 1)"
-        >
-          <app-icon name="chevron-left" [size]="16" /> Previous
-        </button>
-        <ol class="pagination__pages">
-          @for (item of items(); track $index) {
-            <li>
-              @if (item === null) {
-                <span class="pagination__gap" aria-hidden="true">…</span>
-              } @else {
-                <button
-                  type="button"
-                  class="pagination__page"
-                  [class.pagination__page--active]="item === page()"
-                  [attr.aria-current]="item === page() ? 'page' : null"
-                  [attr.aria-label]="'Page ' + item"
-                  (click)="goTo(item)"
-                >
-                  {{ item }}
-                </button>
-              }
-            </li>
-          }
-        </ol>
-        <button
-          type="button"
-          class="btn btn--ghost btn--sm"
-          [disabled]="page() === pageCount()"
-          (click)="goTo(page() + 1)"
-        >
-          Next <app-icon name="chevron-right" [size]="16" />
-        </button>
-      </nav>
-    }
-  `,
-  styles: `
-    .pagination {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-2);
-      margin-top: var(--space-6);
-    }
-    .pagination__pages {
-      display: flex;
-      gap: var(--space-1);
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-    .pagination__page {
-      min-width: 36px;
-      height: 36px;
-      border: 1px solid transparent;
-      border-radius: var(--radius-sm);
-      background: none;
-      font-size: var(--text-sm);
-      cursor: pointer;
-    }
-    .pagination__page:hover {
-      background: var(--color-surface-2);
-    }
-    .pagination__page--active {
-      border-color: var(--color-primary);
-      color: var(--color-primary);
-      font-weight: 600;
-    }
-    .pagination__gap {
-      display: inline-block;
-      min-width: 24px;
-      text-align: center;
-      color: var(--color-text-muted);
-    }
-  `,
+  templateUrl: './pagination.html',
+  styleUrl: './pagination.scss',
 })
 export class Pagination {
   readonly total = input.required<number>();

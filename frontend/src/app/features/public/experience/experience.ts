@@ -11,25 +11,7 @@ import { Timeline, TimelineItem } from '../../../shared/components/timeline/time
 @Component({
   selector: 'app-experience',
   imports: [Timeline, Spinner, ErrorState, EmptyState],
-  template: `
-    <section class="container section">
-      <header class="page-intro">
-        <span class="eyebrow">// experience</span>
-        <h1>Where I've worked</h1>
-        <p>Roles, responsibilities and what I achieved along the way.</p>
-      </header>
-
-      @if (experience.loading()) {
-        <app-spinner label="Loading experience…" />
-      } @else if (experience.error(); as error) {
-        <app-error-state [error]="error" (retry)="experience.reload()" />
-      } @else if (items().length) {
-        <app-timeline [items]="items()" icon="briefcase" />
-      } @else {
-        <app-empty-state icon="briefcase" title="No experience listed yet" />
-      }
-    </section>
-  `,
+  templateUrl: './experience.html',
 })
 export class ExperiencePage {
   private readonly experienceService = inject(ExperienceService);

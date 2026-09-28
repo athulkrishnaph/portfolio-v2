@@ -47,30 +47,7 @@ type LinkGroup = FormGroup<{
     ErrorState,
   ],
   templateUrl: './profile-admin.html',
-  styles: `
-    .sections {
-      display: grid;
-      gap: var(--space-6);
-      max-width: 880px;
-    }
-    .section-title {
-      font-size: var(--text-xl);
-      margin-bottom: var(--space-1);
-    }
-    .links {
-      display: grid;
-      gap: var(--space-3);
-    }
-    .link-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
-      gap: var(--space-3);
-      align-items: start;
-    }
-    .link-row .btn {
-      margin-top: 28px;
-    }
-  `,
+  styleUrl: './profile-admin.scss',
 })
 export class ProfileAdmin implements OnInit {
   private readonly profileService = inject(ProfileService);

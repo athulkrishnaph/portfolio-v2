@@ -1,0 +1,40 @@
+@if (pageCount() > 1) {
+  <nav class="pagination" aria-label="Pagination">
+    <button
+      type="button"
+      class="btn btn--ghost btn--sm"
+      [disabled]="page() === 1"
+      (click)="goTo(page() - 1)"
+    >
+      <app-icon name="chevron-left" [size]="16" /> Previous
+    </button>
+    <ol class="pagination__pages">
+      @for (item of items(); track $index) {
+        <li>
+          @if (item === null) {
+            <span class="pagination__gap" aria-hidden="true">…</span>
+          } @else {
+            <button
+              type="button"
+              class="pagination__page"
+              [class.pagination__page--active]="item === page()"
+              [attr.aria-current]="item === page() ? 'page' : null"
+              [attr.aria-label]="'Page ' + item"
+              (click)="goTo(item)"
+            >
+              {{ item }}
+            </button>
+          }
+        </li>
+      }
+    </ol>
+    <button
+      type="button"
+      class="btn btn--ghost btn--sm"
+      [disabled]="page() === pageCount()"
+      (click)="goTo(page() + 1)"
+    >
+      Next <app-icon name="chevron-right" [size]="16" />
+    </button>
+  </nav>
+}

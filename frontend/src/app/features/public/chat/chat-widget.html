@@ -1,0 +1,152 @@
+@if (enabled()) {
+  <button
+    #launcher
+    type="button"
+    class="chat-launcher"
+    [class.chat-launcher--open]="open()"
+    aria-controls="chat-panel"
+    [attr.aria-expanded]="open()"
+    [attr.aria-label]="open() ? 'Close the AI assistant' : 'Ask the AI assistant about this portfolio'"
+    (click)="toggle()"
+  >
+    <app-icon [name]="open() ? 'x' : 'message'" [size]="24" />
+  </button>
+
+  @if (open()) {
+    <section
+      id="chat-panel"
+      class="chat"
+      role="dialog"
+      aria-labelledby="chat-title"
+      aria-describedby="chat-subtitle"
+      (keydown.escape)="close()"
+    >
+      <header class="chat__header">
+        <span class="chat__avatar" aria-hidden="true"><app-icon name="sparkles" /></span>
+        <div class="chat__heading">
+          <h2 id="chat-title">Ask about {{ ownerName() }}</h2>
+          <p id="chat-subtitle">AI assistant · answers from this portfolio</p>
+        </div>
+        @if (messages().length) {
+          <button type="button" class="btn btn--ghost btn--icon" title="Clear conversation" (click)="clear()">
+            <app-icon name="trash" [size]="16" label="Clear conversation" />
+          </button>
+        }
+        <button type="button" class="btn btn--ghost btn--icon" title="Close" (click)="close()">
+          <app-icon name="x" label="Close the assistant" />
+        </button>
+      </header>
+
+      <div
+        #log
+        class="chat__log"
+        role="log"
+        aria-live="polite"
+        [attr.aria-busy]="busy()"
+        (click)="onLogClick($event)"
+      >
+        @if (!messages().length) {
+          <div class="chat__intro">
+            <p>
+              Hi! I can answer questions about {{ ownerName() }}'s skills, projects, experience and
+              education, based only on this portfolio.
+            </p>
+            <p class="chat__try">Try asking:</p>
+            <ul class="chat__suggestions">
+              @for (q of suggestions(); track q) {
+                <li>
+                  <button type="button" class="chat__suggestion" (click)="send(q)">{{ q }}</button>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+        @for (m of messages(); track m.id) {
+          @if (m.role === 'user') {
+            <div class="msg msg--user">
+              <span class="visually-hidden">You:</span>
+              <p class="msg__bubble">{{ m.content }}</p>
+            </div>
+          } @else {
+            <div class="msg msg--assistant">
+              <span class="visually-hidden">Assistant:</span>
+              <div class="msg__bubble">
+                @if (m.content) {
+                  <div class="md-content" [innerHTML]="m.content | markdown"></div>
+                }
+                @if (m.status === 'streaming' && !m.content) {
+                  <span class="typing-dots" role="status">
+                    <i></i><i></i><i></i>
+                    <span class="visually-hidden">The assistant is thinking…</span>
+                  </span>
+                }
+                @if (m.status === 'error') {
+                  <p class="msg__error" role="alert">
+                    <app-icon name="info" [size]="16" />
+                    <span>{{ m.error }}</span>
+                  </p>
+                  <button type="button" class="btn btn--secondary btn--sm" (click)="retry(m)">
+                    <app-icon name="refresh" [size]="14" /> Try again
+                  </button>
+                }
+              </div>
+
+              @if (m.status === 'done' && m.sources.length) {
+                <div class="sources">
+                  <span class="sources__label">Sources</span>
+                  <ul class="sources__list">
+                    @for (s of m.sources; track s.url + s.title) {
+                      <li>
+                        @if (isInternal(s.url)) {
+                          <a class="sources__item" [routerLink]="s.url">
+                            <app-icon name="link" [size]="12" /> {{ s.title }}
+                          </a>
+                        } @else if (s.url) {
+                          <a class="sources__item" [href]="s.url" target="_blank" rel="noopener noreferrer">
+                            <app-icon name="external" [size]="12" /> {{ s.title }}
+                          </a>
+                        } @else {
+                          <span class="sources__item">{{ s.title }}</span>
+                        }
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+
+      <form class="chat__composer" (submit)="$event.preventDefault(); send()">
+        <label class="visually-hidden" for="chat-input">Your question</label>
+        <textarea
+          #input
+          id="chat-input"
+          class="chat__input"
+          rows="1"
+          placeholder="Ask a question…"
+          [attr.maxlength]="maxChars()"
+          [value]="draft()"
+          (input)="onInput($event)"
+          (keydown)="onKeydown($event)"
+        ></textarea>
+        <button
+          type="submit"
+          class="btn btn--primary btn--icon"
+          [disabled]="busy() || !draft().trim()"
+          aria-label="Send question"
+        >
+          <app-icon name="send" [size]="18" />
+        </button>
+      </form>
+      <p class="chat__note">
+        <span>AI answers can be imperfect · Enter to send, Shift+Enter for a new line</span>
+        @if (draft().length > maxChars() * 0.8) {
+          <span class="chat__count">{{ draft().length }}/{{ maxChars() }}</span>
+        }
+      </p>
+    </section>
+  }
+}

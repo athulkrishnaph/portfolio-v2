@@ -1,0 +1,41 @@
+@let p = project();
+<article class="card card--interactive project">
+  <a class="project__media" [routerLink]="['/projects', p.slug]" tabindex="-1" aria-hidden="true">
+    @if (p.imageUrl) {
+      <img [src]="p.imageUrl" [alt]="''" loading="lazy" />
+    } @else {
+      <span class="project__placeholder">{{ initials() }}</span>
+    }
+  </a>
+  <div class="project__body">
+    <h3 class="project__title">
+      <a [routerLink]="['/projects', p.slug]">{{ p.title }}</a>
+      @if (p.isFeatured) {
+        <span class="tag tag--primary">Featured</span>
+      }
+    </h3>
+    <p class="project__summary">{{ p.summary }}</p>
+    @if (p.technologies.length) {
+      <ul class="tag-list" aria-label="Technologies">
+        @for (tech of visibleTech(); track tech) {
+          <li class="tag">{{ tech }}</li>
+        }
+        @if (hiddenTechCount()) {
+          <li class="tag">+{{ hiddenTechCount() }}</li>
+        }
+      </ul>
+    }
+    <div class="project__links">
+      @if (p.githubUrl) {
+        <a [href]="p.githubUrl" target="_blank" rel="noopener noreferrer">
+          <app-icon name="github" [size]="16" /> Code
+        </a>
+      }
+      @if (p.liveUrl) {
+        <a [href]="p.liveUrl" target="_blank" rel="noopener noreferrer">
+          <app-icon name="external" [size]="16" /> Live demo
+        </a>
+      }
+    </div>
+  </div>
+</article>

@@ -24,7 +24,8 @@ COPY backend/ ./
 # CGO off → fully static binaries; -s -w strips debug info (smaller files).
 RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/api ./cmd/api \
  && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/migrate ./cmd/migrate \
- && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/createadmin ./cmd/createadmin
+ && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/createadmin ./cmd/createadmin \
+ && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/ingest ./cmd/ingest
 
 # ---- 3. Runtime ------------------------------------------------------------------
 FROM alpine:3.22
@@ -44,7 +45,8 @@ ENV SERVER_PORT=8080 \
     STATIC_DIR=/app/web \
     UPLOAD_DIRECTORY=/app/uploads \
     MIGRATIONS_DIR=/app/database/migrations \
-    SEEDS_DIR=/app/database/seeds
+    SEEDS_DIR=/app/database/seeds \
+    KNOWLEDGE_DIR=/app/database/knowledge
 
 # Never run as root inside the container.
 USER app

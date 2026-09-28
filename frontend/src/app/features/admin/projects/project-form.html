@@ -1,0 +1,59 @@
+<app-form-page-shell
+  [title]="isEdit ? 'Edit project' : 'New project'"
+  backUrl="/admin/projects"
+  formId="project-form"
+  [loading]="loading()"
+  [loadError]="loadError()"
+  [saving]="saving()"
+  [errors]="formErrors()"
+  (retry)="load()"
+  (cancelled)="cancel()"
+>
+  <form id="project-form" class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="form-row">
+      <app-form-field label="Title">
+        <input appInput class="input" formControlName="title" autocomplete="off" />
+      </app-form-field>
+      <app-form-field label="Slug" hint="Used in the URL: /projects/your-slug. Leave empty to generate it from the title.">
+        <input appInput class="input" formControlName="slug" autocomplete="off" />
+      </app-form-field>
+    </div>
+
+    <app-form-field label="Summary" hint="One or two sentences for the project card.">
+      <textarea appInput class="textarea textarea--short" formControlName="summary"></textarea>
+    </app-form-field>
+
+    <app-form-field label="Description" hint="Shown on the project page. Line breaks are kept.">
+      <textarea appInput class="textarea" rows="8" formControlName="description"></textarea>
+    </app-form-field>
+
+    <app-form-field label="Technologies" [control]="form.controls.technologies" hint="Press Enter after each one.">
+      <app-tag-input formControlName="technologies" placeholder="e.g. Go, Angular, PostgreSQL" />
+    </app-form-field>
+
+    <div class="form-row">
+      <app-form-field label="GitHub URL">
+        <input appInput class="input" type="url" formControlName="githubUrl" placeholder="https://github.com/…" />
+      </app-form-field>
+      <app-form-field label="Live / demo URL">
+        <input appInput class="input" type="url" formControlName="liveUrl" placeholder="https://…" />
+      </app-form-field>
+    </div>
+
+    <app-form-field label="Image" [control]="form.controls.imageUrl">
+      <app-image-upload formControlName="imageUrl" />
+    </app-form-field>
+
+    <div class="form-row">
+      <app-form-field label="Display order" hint="Lower numbers are shown first.">
+        <input appInput class="input" type="number" min="0" formControlName="displayOrder" />
+      </app-form-field>
+      <div class="featured">
+        <label class="checkbox">
+          <input type="checkbox" formControlName="isFeatured" />
+          Featured on the home page
+        </label>
+      </div>
+    </div>
+  </form>
+</app-form-page-shell>

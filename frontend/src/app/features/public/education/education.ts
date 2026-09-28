@@ -11,25 +11,7 @@ import { Timeline, TimelineItem } from '../../../shared/components/timeline/time
 @Component({
   selector: 'app-education',
   imports: [Timeline, Spinner, ErrorState, EmptyState],
-  template: `
-    <section class="container section">
-      <header class="page-intro">
-        <span class="eyebrow">// education</span>
-        <h1>Education</h1>
-        <p>Degrees, courses and programs that shaped how I build software.</p>
-      </header>
-
-      @if (education.loading()) {
-        <app-spinner label="Loading education…" />
-      } @else if (education.error(); as error) {
-        <app-error-state [error]="error" (retry)="education.reload()" />
-      } @else if (items().length) {
-        <app-timeline [items]="items()" icon="graduation" ongoingLabel="In progress" />
-      } @else {
-        <app-empty-state icon="graduation" title="No education listed yet" />
-      }
-    </section>
-  `,
+  templateUrl: './education.html',
 })
 export class EducationPage {
   private readonly educationService = inject(EducationService);

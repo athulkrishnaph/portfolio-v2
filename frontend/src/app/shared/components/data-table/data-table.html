@@ -1,0 +1,176 @@
+@let cfg = config();
+
+@if (loading()) {
+  <app-spinner [label]="cfg.loadingLabel ?? 'Loading…'" />
+} @else if (error(); as err) {
+  <app-error-state [error]="err" (retry)="retry.emit()" />
+} @else if (!rows().length) {
+  <app-empty-state
+    [title]="cfg.empty?.title ?? 'Nothing here yet'"
+    [message]="cfg.empty?.message ?? ''"
+    [icon]="cfg.empty?.icon ?? 'folder'"
+  >
+    <!-- Optional call to action from the page: <a tableEmpty …>New project</a> -->
+    <ng-content select="[tableEmpty]" />
+  </app-empty-state>
+} @else {
+  <div class="table-wrap">
+    <table class="table data-table">
+      <caption class="visually-hidden">{{ cfg.caption }}</caption>
+      <thead>
+        <tr>
+          @for (col of cfg.columns; track col.key) {
+            <th scope="col" [attr.aria-sort]="ariaSort(col)" [class.is-number]="col.type === 'number'">
+              @if (col.sortable) {
+                <button type="button" class="data-table__sort" (click)="toggleSort(col)">
+                  {{ col.header }}
+                  <span class="data-table__sort-icon" aria-hidden="true">
+                    @switch (ariaSort(col)) {
+                      @case ('ascending') { ▲ }
+                      @case ('descending') { ▼ }
+                      @default { ↕ }
+                    }
+                  </span>
+                </button>
+              } @else {
+                {{ col.header }}
+              }
+            </th>
+          }
+          @if (cfg.actions?.length) {
+            <th scope="col" class="data-table__actions-head">{{ cfg.actionsHeader ?? 'Actions' }}</th>
+          }
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (row of pageRows(); track rowId(row)) {
+          <tr>
+            @for (col of cfg.columns; track col.key; let first = $first) {
+              <td
+                [attr.data-label]="first ? null : col.header"
+                [class.is-number]="col.type === 'number'"
+                [class.data-table__primary]="first"
+              >
+                @switch (col.type ?? 'text') {
+                  @case ('date') {
+                    @let d = text(col, row);
+                    {{ d === '—' ? d : (d | monthYear) }}
+                  }
+                  @case ('dateRange') {
+                    @let r = range(col, row);
+                    {{ r[0] | dateRange: r[1] : (col.ongoingLabel ?? 'Present') }}
+                  }
+                  @case ('tags') {
+                    {{ tags(col, row) }}
+                  }
+                  @case ('toggle') {
+                    <button
+                      type="button"
+                      class="btn btn--ghost btn--icon data-table__toggle"
+                      [class.is-on]="!!value(col, row)"
+                      [attr.aria-pressed]="!!value(col, row)"
+                      [attr.aria-label]="col.toggle?.label(row) ?? col.header"
+                      [disabled]="isBusy(row)"
+                      (click)="toggle(col, row)"
+                    >
+                      <app-icon [name]="col.toggle?.icon ?? 'check'" />
+                    </button>
+                  }
+                  @default {
+                    @if (col.link) {
+                      <a class="table__title" [routerLink]="link(col.link(row))">{{ text(col, row) }}</a>
+                    } @else {
+                      {{ text(col, row) }}
+                    }
+                    @if (col.badge?.(row); as badge) {
+                      <span class="tag data-table__badge" [class.tag--success]="badge.tone === 'success'" [class.tag--primary]="badge.tone === 'primary'">
+                        {{ badge.label }}
+                      </span>
+                    }
+                    @if (col.subtext) {
+                      <div class="text-muted data-table__subtext">{{ col.subtext(row) }}</div>
+                    }
+                  }
+                }
+              </td>
+            }
+
+            @if (cfg.actions?.length) {
+              <td class="table__actions">
+                @if (cfg.actions!.length > 1) {
+                  <!-- Two or more actions: one "⋮" button that opens the actions menu -->
+                  <button
+                    type="button"
+                    class="btn btn--ghost btn--icon"
+                    aria-haspopup="menu"
+                    [attr.aria-expanded]="menu()?.row === row"
+                    [attr.aria-label]="'More actions for ' + rowTitle(row)"
+                    title="More actions"
+                    [disabled]="isBusy(row)"
+                    (click)="toggleMenu(row, $event)"
+                  >
+                    <app-icon name="more-vertical" />
+                  </button>
+                } @else {
+                  <!-- A single action is shown directly -->
+                  @let a = cfg.actions![0];
+                  @if (a.link) {
+                    <a class="btn btn--ghost btn--icon" [routerLink]="link(a.link(row))">
+                      <app-icon [name]="a.icon" [label]="a.label(row)" />
+                    </a>
+                  } @else {
+                    <button
+                      type="button"
+                      class="btn btn--ghost btn--icon"
+                      [class.data-table__danger]="a.danger"
+                      [disabled]="isBusy(row)"
+                      (click)="runAction(a, row)"
+                    >
+                      <app-icon [name]="a.icon" [label]="a.label(row)" />
+                    </button>
+                  }
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (cfg.pageSize) {
+    <app-pagination [total]="rows().length" [pageSize]="cfg.pageSize" [(page)]="page" />
+  }
+}
+
+<!-- The actions menu of the row whose "⋮" was clicked -->
+@if (menu(); as m) {
+  <div
+    #menu
+    class="row-menu"
+    role="menu"
+    [attr.aria-label]="'Actions for ' + rowTitle(m.row)"
+    [style.top.px]="m.top"
+    [style.left.px]="m.left"
+    (keydown)="onMenuKeydown($event)"
+  >
+    @for (a of cfg.actions; track a.id) {
+      @if (a.link) {
+        <a role="menuitem" class="row-menu__item" [routerLink]="link(a.link(m.row))" (click)="closeMenu()">
+          <app-icon [name]="a.icon" [size]="16" /> {{ a.text }}
+        </a>
+      } @else {
+        <button
+          role="menuitem"
+          type="button"
+          class="row-menu__item"
+          [class.row-menu__item--danger]="a.danger"
+          (click)="chooseFromMenu(a, m.row)"
+        >
+          <app-icon [name]="a.icon" [size]="16" /> {{ a.text }}
+        </button>
+      }
+    }
+  </div>
+}

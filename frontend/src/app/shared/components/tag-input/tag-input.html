@@ -1,0 +1,20 @@
+<div class="tags input" [class.tags--disabled]="disabled()" (click)="field.focus()">
+  @for (tag of tags(); track tag; let i = $index) {
+    <span class="tag tag--primary">
+      {{ tag }}
+      <button type="button" class="tags__remove" [disabled]="disabled()" (click)="remove(i)">
+        <app-icon name="x" [size]="12" [label]="'Remove ' + tag" />
+      </button>
+    </span>
+  }
+  <input
+    #field
+    class="tags__field"
+    [id]="inputId()"
+    [placeholder]="placeholder()"
+    [disabled]="disabled()"
+    [attr.maxlength]="maxLength()"
+    (keydown)="onKeydown($event, field)"
+    (blur)="commit(field); onTouched()"
+  />
+</div>

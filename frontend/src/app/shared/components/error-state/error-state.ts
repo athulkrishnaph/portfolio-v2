@@ -9,16 +9,7 @@ import { Icon } from '../icon/icon';
   selector: 'app-error-state',
   imports: [Icon, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="state state--error" role="alert">
-      <span class="state__icon"><app-icon name="info" [size]="28" /></span>
-      <h3 class="state__title">{{ title() }}</h3>
-      <p class="state__message">{{ message() }}</p>
-      <button appButton type="button" (click)="retry.emit()">
-        <app-icon name="refresh" [size]="16" /> Try again
-      </button>
-    </div>
-  `,
+  templateUrl: './error-state.html',
   styleUrl: '../empty-state/state.scss',
 })
 export class ErrorState {

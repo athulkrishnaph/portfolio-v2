@@ -12,11 +12,7 @@ import { Toasts } from './shared/components/toasts/toasts';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, Toasts, ConfirmDialog],
-  template: `
-    <router-outlet />
-    <app-toasts />
-    <app-confirm-dialog />
-  `,
+  templateUrl: './app.html',
 })
 export class App {
   // Injected here so the saved light/dark choice is applied on startup.

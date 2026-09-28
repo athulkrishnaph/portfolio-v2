@@ -1,0 +1,50 @@
+<section class="container section">
+  @if (profile.loading()) {
+    <app-spinner label="Loading…" />
+  } @else if (profile.error(); as error) {
+    <app-error-state [error]="error" (retry)="profile.reload()" />
+  } @else if (profile.data(); as p) {
+    <div class="about">
+      <aside class="about__aside">
+        @if (p.imageUrl) {
+          <img class="about__photo" [src]="p.imageUrl" [alt]="'Photo of ' + p.fullName" />
+        }
+        <div class="card card--padded about__facts">
+          <h2 class="about__facts-title">Quick facts</h2>
+          <ul>
+            @if (p.location) {
+              <li><app-icon name="map-pin" /> {{ p.location }}</li>
+            }
+            @if (p.email) {
+              <li><app-icon name="mail" /> <a [href]="'mailto:' + p.email">{{ p.email }}</a></li>
+            }
+            @if (p.resumeUrl) {
+              <li>
+                <app-icon name="download" />
+                <a [href]="p.resumeUrl" target="_blank" rel="noopener">Download resume</a>
+              </li>
+            }
+          </ul>
+          @if (p.socialLinks.length) {
+            <app-social-links [links]="p.socialLinks" />
+          }
+        </div>
+      </aside>
+
+      <div>
+        <span class="eyebrow">// about me</span>
+        <h1>{{ p.fullName }}</h1>
+        @if (p.headline) {
+          <p class="about__headline">{{ p.headline }}</p>
+        }
+        <p class="about__bio prose">{{ p.bio }}</p>
+        <div class="about__actions">
+          <a class="btn btn--primary" routerLink="/experience">My experience</a>
+          <a class="btn btn--secondary" routerLink="/projects">See projects</a>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <app-empty-state icon="user" title="Profile coming soon" message="This section hasn't been filled in yet." />
+  }
+</section>

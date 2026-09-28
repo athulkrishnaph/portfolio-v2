@@ -1,0 +1,12 @@
+<!-- aria-live: screen readers announce new messages without moving focus -->
+<div class="toasts" aria-live="polite">
+  @for (toast of notifications.toasts(); track toast.id) {
+    <div class="toast" [class.toast--success]="toast.kind === 'success'" [class.toast--error]="toast.kind === 'error'">
+      <app-icon [name]="toast.kind === 'error' ? 'info' : 'check'" />
+      <span class="toast__message">{{ toast.message }}</span>
+      <button type="button" class="toast__close" (click)="notifications.dismiss(toast.id)">
+        <app-icon name="x" [size]="14" label="Dismiss" />
+      </button>
+    </div>
+  }
+</div>

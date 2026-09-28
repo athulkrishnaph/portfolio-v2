@@ -1,0 +1,30 @@
+<ol class="timeline">
+  @for (item of items(); track item.id) {
+    <li class="timeline__item">
+      <span class="timeline__marker" [class.timeline__marker--current]="item.current">
+        <app-icon [name]="icon()" [size]="16" />
+      </span>
+      <article class="card card--padded timeline__card">
+        <header class="timeline__header">
+          <div>
+            <h3 class="timeline__title">{{ item.title }}</h3>
+            <p class="timeline__subtitle">{{ item.subtitle }}</p>
+          </div>
+          <div class="timeline__meta">
+            <span class="tag" [class.tag--success]="item.current">
+              {{ item.startDate | dateRange: item.endDate : ongoingLabel() }}
+            </span>
+            @if (item.location) {
+              <span class="timeline__location">
+                <app-icon name="map-pin" [size]="14" /> {{ item.location }}
+              </span>
+            }
+          </div>
+        </header>
+        @if (item.description) {
+          <p class="timeline__description prose">{{ item.description }}</p>
+        }
+      </article>
+    </li>
+  }
+</ol>

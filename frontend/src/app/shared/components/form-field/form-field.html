@@ -1,0 +1,12 @@
+<label class="field__label" [attr.for]="inputId">
+  {{ label() }}
+  @if (isRequired()) {
+    <span class="field__required" aria-hidden="true">*</span>
+  }
+</label>
+<ng-content />
+@if (errorMessage(); as message) {
+  <p class="field__error" [id]="messageId">{{ message }}</p>
+} @else if (hint()) {
+  <p class="field__hint" [id]="messageId">{{ hint() }}</p>
+}

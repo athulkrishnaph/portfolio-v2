@@ -1,0 +1,47 @@
+<app-form-page-shell
+  [title]="isEdit ? 'Edit education' : 'New education'"
+  backUrl="/admin/education"
+  formId="education-form"
+  [loading]="loading()"
+  [loadError]="loadError()"
+  [saving]="saving()"
+  [errors]="formErrors()"
+  (retry)="load()"
+  (cancelled)="cancel()"
+>
+  <form id="education-form" class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <app-form-field label="Institution">
+      <input appInput class="input" formControlName="institution" placeholder="e.g. University of Lisbon" />
+    </app-form-field>
+
+    <div class="form-row">
+      <app-form-field label="Degree">
+        <input appInput class="input" formControlName="degree" placeholder="e.g. BSc" />
+      </app-form-field>
+      <app-form-field label="Field of study">
+        <input appInput class="input" formControlName="fieldOfStudy" placeholder="e.g. Computer Science" />
+      </app-form-field>
+    </div>
+
+    <app-form-field label="Location">
+      <input appInput class="input" formControlName="location" />
+    </app-form-field>
+
+    <div class="form-row">
+      <app-form-field label="Start date">
+        <input appInput class="input" type="date" formControlName="startDate" />
+      </app-form-field>
+      <app-form-field label="End date" hint="Leave empty if you are still studying.">
+        <input appInput class="input" type="date" formControlName="endDate" />
+      </app-form-field>
+    </div>
+
+    <app-form-field label="Description">
+      <textarea appInput class="textarea" rows="5" formControlName="description"></textarea>
+    </app-form-field>
+
+    <app-form-field label="Display order" hint="Lower numbers are shown first.">
+      <input appInput class="input" type="number" min="0" formControlName="displayOrder" />
+    </app-form-field>
+  </form>
+</app-form-page-shell>

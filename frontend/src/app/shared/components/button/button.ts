@@ -23,12 +23,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
     '[attr.disabled]': 'loading() || disabled() ? "" : null',
     '[attr.aria-busy]': 'loading() || null',
   },
-  template: `
-    @if (loading()) {
-      <app-spinner size="sm" />
-    }
-    <ng-content />
-  `,
+  templateUrl: './button.html',
 })
 export class Button {
   readonly variant = input<ButtonVariant>('secondary');

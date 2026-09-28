@@ -1,0 +1,59 @@
+<section class="container section">
+  <a class="back link-arrow" routerLink="/projects">
+    <app-icon name="arrow-left" [size]="16" /> All projects
+  </a>
+
+  @if (project.loading()) {
+    <app-spinner label="Loading project…" />
+  } @else if (project.error(); as error) {
+    @if (error.isNotFound) {
+      <app-empty-state title="Project not found" message="It may have been renamed or removed.">
+        <a class="btn btn--primary" routerLink="/projects">Browse projects</a>
+      </app-empty-state>
+    } @else {
+      <app-error-state [error]="error" (retry)="project.reload()" />
+    }
+  } @else if (project.data(); as p) {
+    <article class="detail">
+      <header class="detail__header">
+        @if (p.isFeatured) {
+          <span class="tag tag--primary">Featured project</span>
+        }
+        <h1 class="detail__title">{{ p.title }}</h1>
+        @if (p.summary) {
+          <p class="detail__summary">{{ p.summary }}</p>
+        }
+        <div class="detail__actions">
+          @if (p.liveUrl) {
+            <a class="btn btn--primary" [href]="p.liveUrl" target="_blank" rel="noopener noreferrer">
+              <app-icon name="external" [size]="16" /> Live demo
+            </a>
+          }
+          @if (p.githubUrl) {
+            <a class="btn btn--secondary" [href]="p.githubUrl" target="_blank" rel="noopener noreferrer">
+              <app-icon name="github" [size]="16" /> Source code
+            </a>
+          }
+        </div>
+      </header>
+
+      @if (p.imageUrl) {
+        <img class="detail__image" [src]="p.imageUrl" [alt]="'Screenshot of ' + p.title" />
+      }
+
+      <div class="detail__body">
+        <div class="prose detail__description">{{ p.description || p.summary }}</div>
+        @if (p.technologies.length) {
+          <aside class="card card--padded">
+            <h2 class="detail__aside-title">Built with</h2>
+            <ul class="tag-list">
+              @for (tech of p.technologies; track tech) {
+                <li class="tag tag--primary">{{ tech }}</li>
+              }
+            </ul>
+          </aside>
+        }
+      </div>
+    </article>
+  }
+</section>

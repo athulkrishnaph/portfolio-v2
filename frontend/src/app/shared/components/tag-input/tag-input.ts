@@ -15,57 +15,8 @@ import { Icon } from '../icon/icon';
   imports: [Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => TagInput), multi: true }],
-  template: `
-    <div class="tags input" [class.tags--disabled]="disabled()" (click)="field.focus()">
-      @for (tag of tags(); track tag; let i = $index) {
-        <span class="tag tag--primary">
-          {{ tag }}
-          <button type="button" class="tags__remove" [disabled]="disabled()" (click)="remove(i)">
-            <app-icon name="x" [size]="12" [label]="'Remove ' + tag" />
-          </button>
-        </span>
-      }
-      <input
-        #field
-        class="tags__field"
-        [id]="inputId()"
-        [placeholder]="placeholder()"
-        [disabled]="disabled()"
-        [attr.maxlength]="maxLength()"
-        (keydown)="onKeydown($event, field)"
-        (blur)="commit(field); onTouched()"
-      />
-    </div>
-  `,
-  styles: `
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: var(--space-2);
-      height: auto;
-      cursor: text;
-    }
-    .tags--disabled {
-      background: var(--color-surface-2);
-    }
-    .tags__remove {
-      display: inline-flex;
-      padding: 0;
-      border: 0;
-      background: none;
-      color: inherit;
-      cursor: pointer;
-    }
-    .tags__field {
-      flex: 1;
-      min-width: 140px;
-      padding: var(--space-1) 0;
-      border: 0;
-      outline: none;
-      background: transparent;
-    }
-  `,
+  templateUrl: './tag-input.html',
+  styleUrl: './tag-input.scss',
 })
 export class TagInput implements ControlValueAccessor {
   readonly placeholder = input('Type and press Enter');

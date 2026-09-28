@@ -1,0 +1,53 @@
+<div class="upload">
+  <div class="upload__preview" [class.upload__preview--doc]="kind() === 'document'">
+    @if (value() && kind() === 'image') {
+      <img [src]="value()" alt="Current image" />
+    } @else if (value()) {
+      <a [href]="value()" target="_blank" rel="noopener"><app-icon name="file" [size]="28" /></a>
+    } @else {
+      <app-icon [name]="kind() === 'image' ? 'image' : 'file'" [size]="28" />
+    }
+  </div>
+
+  <div class="upload__controls">
+    <div class="upload__buttons">
+      <input
+        #fileInput
+        type="file"
+        class="visually-hidden"
+        tabindex="-1"
+        [accept]="accept()"
+        (change)="onFileSelected(fileInput)"
+      />
+      <button
+        appButton
+        type="button"
+        size="sm"
+        [loading]="uploading()"
+        [disabled]="disabled()"
+        (click)="fileInput.click()"
+      >
+        <app-icon name="upload" [size]="16" />
+        {{ value() ? 'Replace' : 'Upload' }} {{ kind() === 'image' ? 'image' : 'PDF' }}
+      </button>
+      @if (value()) {
+        <button appButton type="button" size="sm" variant="ghost" [disabled]="disabled()" (click)="setValue('')">
+          <app-icon name="trash" [size]="16" /> Remove
+        </button>
+      }
+    </div>
+    <input
+      class="input"
+      type="url"
+      placeholder="…or paste a URL (https://…)"
+      [attr.aria-label]="'URL of the ' + (kind() === 'image' ? 'image' : 'file')"
+      [value]="value()"
+      [disabled]="disabled()"
+      (change)="onUrlTyped($event)"
+      (blur)="onTouched()"
+    />
+    <p class="upload__hint" [class.upload__hint--error]="error()">
+      {{ error() || hint() }}
+    </p>
+  </div>
+</div>

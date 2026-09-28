@@ -1,0 +1,15 @@
+@let request = confirm.pending();
+<app-modal [open]="!!request" [title]="request?.title ?? ''" (closed)="confirm.answer(false)">
+  <p class="text-muted">{{ request?.message }}</p>
+  <div class="actions">
+    <button appButton type="button" (click)="confirm.answer(false)">Cancel</button>
+    <button
+      appButton
+      type="button"
+      [variant]="request?.danger ? 'danger' : 'primary'"
+      (click)="confirm.answer(true)"
+    >
+      {{ request?.confirmLabel ?? 'Confirm' }}
+    </button>
+  </div>
+</app-modal>

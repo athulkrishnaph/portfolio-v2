@@ -54,7 +54,9 @@ func New(t *testing.T) *pgxpool.Pool {
 	if err != nil {
 		t.Fatalf("testdb: parse url: %v", err)
 	}
-	connCfg.RuntimeParams["search_path"] = schema
+	// "public" stays on the path because extensions such as pgvector (the
+	// vector type) live there; the test's own tables are created in schema.
+	connCfg.RuntimeParams["search_path"] = schema + ", public"
 	conn, err := pgx.ConnectConfig(ctx, connCfg)
 	if err != nil {
 		t.Fatalf("testdb: connect to schema: %v", err)
@@ -68,7 +70,7 @@ func New(t *testing.T) *pgxpool.Pool {
 	if err != nil {
 		t.Fatalf("testdb: parse pool config: %v", err)
 	}
-	poolCfg.ConnConfig.RuntimeParams["search_path"] = schema
+	poolCfg.ConnConfig.RuntimeParams["search_path"] = schema + ", public"
 	pool, err := pgxpool.NewWithConfig(ctx, poolCfg)
 	if err != nil {
 		t.Fatalf("testdb: pool: %v", err)

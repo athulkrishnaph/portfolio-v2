@@ -1,0 +1,18 @@
+<app-page-header title="Projects" [subtitle]="(projects.data()?.length ?? 0) + ' total'">
+  <a class="btn btn--primary" routerLink="/admin/projects/new">
+    <app-icon name="plus" [size]="16" /> New project
+  </a>
+</app-page-header>
+
+<app-data-table
+  [config]="table"
+  [data]="projects.data()"
+  [loading]="projects.loading()"
+  [error]="projects.error()"
+  [busyRowId]="deleter.busyId() ?? featuringId()"
+  (retry)="projects.reload()"
+  (deleteRequest)="remove($event)"
+  (action)="onAction($event)"
+>
+  <a tableEmpty class="btn btn--primary" routerLink="/admin/projects/new">New project</a>
+</app-data-table>

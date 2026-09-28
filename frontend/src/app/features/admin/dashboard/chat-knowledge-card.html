@@ -1,0 +1,32 @@
+<section class="card card--padded knowledge" aria-labelledby="knowledge-title">
+  <span class="knowledge__icon" aria-hidden="true"><app-icon name="sparkles" [size]="22" /></span>
+  <div class="knowledge__body">
+    <h2 id="knowledge-title" class="knowledge__title">AI assistant</h2>
+    @if (info.loading()) {
+      <p class="text-muted">Loading…</p>
+    } @else if (info.error(); as error) {
+      <p class="text-muted">{{ error.message }}</p>
+    } @else if (info.data(); as k) {
+      @if (k.enabled) {
+        <p class="text-muted">
+          Knows <strong>{{ k.chunks }}</strong> pieces of your portfolio
+          @if (k.lastIndexedAt) {
+            · last updated {{ formatDate(k.lastIndexedAt) }}
+          }
+          · {{ k.model }}
+        </p>
+        <p class="knowledge__hint">
+          After editing your profile, projects, experience or resume, rebuild so the
+          assistant answers with the latest content. Only changed content is re-processed.
+        </p>
+      } @else {
+        <p class="text-muted"><strong>Disabled.</strong> {{ k.reason }}</p>
+      }
+    }
+  </div>
+  @if (info.data()?.enabled) {
+    <button appButton type="button" [loading]="rebuilding()" (click)="rebuild()">
+      <app-icon name="refresh" [size]="16" /> Rebuild knowledge
+    </button>
+  }
+</section>

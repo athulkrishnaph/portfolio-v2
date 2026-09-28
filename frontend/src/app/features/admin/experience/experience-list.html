@@ -1,0 +1,17 @@
+<app-page-header title="Experience" [subtitle]="(experience.data()?.length ?? 0) + ' total'">
+  <a class="btn btn--primary" routerLink="/admin/experience/new">
+    <app-icon name="plus" [size]="16" /> New experience
+  </a>
+</app-page-header>
+
+<app-data-table
+  [config]="table"
+  [data]="experience.data()"
+  [loading]="experience.loading()"
+  [error]="experience.error()"
+  [busyRowId]="deleter.busyId()"
+  (retry)="experience.reload()"
+  (deleteRequest)="remove($event)"
+>
+  <a tableEmpty class="btn btn--primary" routerLink="/admin/experience/new">New experience</a>
+</app-data-table>

@@ -1,0 +1,11 @@
+<footer class="footer">
+  <div class="container footer__inner">
+    <p class="footer__copy">
+      &copy; {{ year }} {{ profile()?.fullName }} &middot;
+      <a routerLink="/contact">Get in touch</a>
+    </p>
+    @if (profile()?.socialLinks?.length) {
+      <app-social-links [links]="profile()!.socialLinks" />
+    }
+  </div>
+</footer>

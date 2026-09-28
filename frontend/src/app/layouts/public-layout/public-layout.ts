@@ -1,31 +1,15 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
+import { ChatWidget } from '../../features/public/chat/chat-widget';
 import { Navbar } from '../navbar/navbar';
 import { Footer } from '../footer/footer';
 
-/** Shell for every public page: navbar, page content, footer. */
+/** Shell for every public page: navbar, page content, footer, chat assistant. */
 @Component({
   selector: 'app-public-layout',
-  imports: [RouterOutlet, Navbar, Footer],
-  template: `
-    <a class="skip-link" href="#main-content">Skip to content</a>
-    <app-navbar />
-    <main id="main-content" class="public-main" tabindex="-1">
-      <router-outlet />
-    </main>
-    <app-footer />
-  `,
-  styles: `
-    :host {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    .public-main {
-      flex: 1;
-      outline: none;
-    }
-  `,
+  imports: [RouterOutlet, Navbar, Footer, ChatWidget],
+  templateUrl: './public-layout.html',
+  styleUrl: './public-layout.scss',
 })
 export class PublicLayout {}

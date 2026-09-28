@@ -1,0 +1,21 @@
+@let c = certificate();
+<article class="card card--padded cert">
+  @if (c.imageUrl) {
+    <img class="cert__image" [src]="c.imageUrl" [alt]="'Certificate: ' + c.title" loading="lazy" />
+  } @else {
+    <span class="cert__icon"><app-icon name="award" [size]="24" /></span>
+  }
+  <div class="cert__body">
+    <h3 class="cert__title">{{ c.title }}</h3>
+    <p class="cert__issuer">{{ c.issuer }}</p>
+    <p class="cert__date">
+      <app-icon name="calendar" [size]="14" />
+      <time [attr.datetime]="c.issueDate">Issued {{ c.issueDate | monthYear }}</time>
+    </p>
+    @if (c.credentialUrl) {
+      <a class="cert__link" [href]="c.credentialUrl" target="_blank" rel="noopener noreferrer">
+        View credential <app-icon name="external" [size]="14" />
+      </a>
+    }
+  </div>
+</article>

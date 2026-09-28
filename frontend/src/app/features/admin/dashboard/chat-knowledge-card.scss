@@ -1,0 +1,31 @@
+.knowledge {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-top: var(--space-7);
+}
+.knowledge__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+.knowledge__body {
+  flex: 1;
+  min-width: 240px;
+}
+.knowledge__body p {
+  margin: 0 0 var(--space-1);
+}
+.knowledge__title {
+  margin-bottom: var(--space-1);
+  font-size: var(--text-xl);
+}
+.knowledge__hint {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}

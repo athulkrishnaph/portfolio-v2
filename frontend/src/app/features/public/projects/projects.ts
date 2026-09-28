@@ -14,82 +14,8 @@ const PAGE_SIZE = 6;
 @Component({
   selector: 'app-projects',
   imports: [ProjectCard, Pagination, Spinner, ErrorState, EmptyState],
-  template: `
-    <section class="container section">
-      <header class="page-intro">
-        <span class="eyebrow">// projects</span>
-        <h1>Things I've built</h1>
-        <p>A selection of projects — from APIs and tools to full-stack applications.</p>
-      </header>
-
-      @if (projects.loading()) {
-        <app-spinner label="Loading projects…" />
-      } @else if (projects.error(); as error) {
-        <app-error-state [error]="error" (retry)="projects.reload()" />
-      } @else if (projects.data()?.length) {
-        @if (technologies().length > 1) {
-          <div class="filters" role="group" aria-label="Filter by technology">
-            <button
-              type="button"
-              class="filter"
-              [class.filter--active]="!selectedTech()"
-              [attr.aria-pressed]="!selectedTech()"
-              (click)="selectTech(null)"
-            >
-              All
-            </button>
-            @for (tech of technologies(); track tech) {
-              <button
-                type="button"
-                class="filter"
-                [class.filter--active]="selectedTech() === tech"
-                [attr.aria-pressed]="selectedTech() === tech"
-                (click)="selectTech(tech)"
-              >
-                {{ tech }}
-              </button>
-            }
-          </div>
-        }
-
-        <p class="visually-hidden" aria-live="polite">{{ filtered().length }} projects shown</p>
-        <div class="grid grid--3">
-          @for (project of pageItems(); track project.id) {
-            <app-project-card [project]="project" />
-          }
-        </div>
-        <app-pagination [total]="filtered().length" [pageSize]="pageSize" [(page)]="page" />
-      } @else {
-        <app-empty-state title="No projects yet" message="Projects will appear here once they are added." />
-      }
-    </section>
-  `,
-  styles: `
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-2);
-      margin-bottom: var(--space-6);
-    }
-    .filter {
-      padding: var(--space-1) var(--space-3);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-full);
-      background: var(--color-surface);
-      font-size: var(--text-sm);
-      color: var(--color-text-muted);
-      cursor: pointer;
-    }
-    .filter:hover {
-      color: var(--color-text);
-    }
-    .filter--active {
-      border-color: var(--color-primary);
-      background: var(--color-primary-soft);
-      color: var(--color-primary);
-      font-weight: 600;
-    }
-  `,
+  templateUrl: './projects.html',
+  styleUrl: './projects.scss',
 })
 export class Projects {
   private readonly projectsService = inject(ProjectsService);

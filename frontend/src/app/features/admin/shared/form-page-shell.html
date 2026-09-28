@@ -1,0 +1,31 @@
+<app-page-header [title]="title()">
+  <a class="btn btn--ghost" [routerLink]="backUrl()">
+    <app-icon name="arrow-left" [size]="16" /> Back
+  </a>
+</app-page-header>
+
+@if (loading()) {
+  <app-spinner label="Loading…" />
+} @else if (loadError(); as error) {
+  <app-error-state [error]="error" (retry)="retry.emit()" />
+} @else {
+  <div class="card card--padded shell">
+    @if (errors().length) {
+      <div class="alert alert--danger" role="alert">
+        <app-icon name="info" />
+        <div>
+          @for (message of errors(); track message) {
+            <div>{{ message }}</div>
+          }
+        </div>
+      </div>
+    }
+    <ng-content />
+    <div class="form-actions">
+      <button appButton type="button" variant="ghost" (click)="cancelled.emit()">Cancel</button>
+      <button appButton type="submit" variant="primary" [attr.form]="formId()" [loading]="saving()">
+        <app-icon name="check" [size]="16" /> {{ saveLabel() }}
+      </button>
+    </div>
+  </div>
+}

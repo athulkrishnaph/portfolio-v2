@@ -194,6 +194,68 @@
   font-weight: 600;
 }
 
+// Rendered Markdown (e.g. chatbot answers bound with [innerHTML]).
+.md-content {
+  p,
+  ul,
+  ol,
+  pre {
+    margin: 0 0 var(--space-2);
+  }
+  > :last-child {
+    margin-bottom: 0;
+  }
+  ul,
+  ol {
+    padding-left: var(--space-5);
+  }
+  code {
+    padding: 1px 4px;
+    border-radius: 4px;
+    background: var(--color-bg);
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+  }
+  pre {
+    padding: var(--space-2);
+    overflow-x: auto;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+  }
+}
+
+// Animated "…" shown while waiting for a reply.
+.typing-dots {
+  display: inline-flex;
+  gap: 4px;
+  padding: var(--space-1) 0;
+
+  i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-text-muted);
+    animation: typing-blink 1.2s infinite ease-in-out;
+  }
+  i:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  i:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+}
+
+@keyframes typing-blink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
 // Long text from the database keeps its line breaks.
 .prose {
   white-space: pre-line;

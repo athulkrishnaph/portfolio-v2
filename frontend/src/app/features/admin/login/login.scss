@@ -1,0 +1,45 @@
+.login {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: var(--space-4);
+  background: radial-gradient(circle at 20% 10%, var(--color-primary-soft), transparent 50%), var(--color-bg);
+}
+.login__card {
+  display: grid;
+  gap: var(--space-4);
+  width: min(420px, 100%);
+  padding: var(--space-6);
+}
+.login__brand {
+  font-weight: 700;
+  color: var(--color-text);
+}
+.login__brand span {
+  font-family: var(--font-mono);
+  color: var(--color-primary);
+}
+.login__title {
+  margin: 0;
+  font-size: var(--text-3xl);
+}
+.login__card p {
+  margin: 0;
+}
+.password {
+  position: relative;
+}
+.password .input {
+  padding-right: 72px;
+}
+.password__toggle {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+.login__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+}

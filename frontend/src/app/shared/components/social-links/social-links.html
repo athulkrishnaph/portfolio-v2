@@ -1,0 +1,19 @@
+<ul class="social" [class.social--labels]="showLabels()">
+  @for (link of links(); track link.platform) {
+    <li>
+      <a
+        class="social__link"
+        [href]="link.url"
+        target="_blank"
+        rel="noopener noreferrer"
+        [attr.aria-label]="showLabels() ? null : link.platform"
+        [title]="link.platform"
+      >
+        <app-icon [name]="iconFor(link.platform)" [size]="20" />
+        @if (showLabels()) {
+          <span>{{ link.platform }}</span>
+        }
+      </a>
+    </li>
+  }
+</ul>

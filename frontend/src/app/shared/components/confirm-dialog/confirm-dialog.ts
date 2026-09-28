@@ -12,31 +12,8 @@ import { Modal } from '../modal/modal';
   selector: 'app-confirm-dialog',
   imports: [Modal, Button],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    @let request = confirm.pending();
-    <app-modal [open]="!!request" [title]="request?.title ?? ''" (closed)="confirm.answer(false)">
-      <p class="text-muted">{{ request?.message }}</p>
-      <div class="actions">
-        <button appButton type="button" (click)="confirm.answer(false)">Cancel</button>
-        <button
-          appButton
-          type="button"
-          [variant]="request?.danger ? 'danger' : 'primary'"
-          (click)="confirm.answer(true)"
-        >
-          {{ request?.confirmLabel ?? 'Confirm' }}
-        </button>
-      </div>
-    </app-modal>
-  `,
-  styles: `
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: var(--space-3);
-      margin-top: var(--space-5);
-    }
-  `,
+  templateUrl: './confirm-dialog.html',
+  styleUrl: './confirm-dialog.scss',
 })
 export class ConfirmDialog {
   protected readonly confirm = inject(ConfirmService);

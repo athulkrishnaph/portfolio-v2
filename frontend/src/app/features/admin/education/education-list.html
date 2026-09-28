@@ -1,0 +1,17 @@
+<app-page-header title="Education" [subtitle]="(education.data()?.length ?? 0) + ' total'">
+  <a class="btn btn--primary" routerLink="/admin/education/new">
+    <app-icon name="plus" [size]="16" /> New education
+  </a>
+</app-page-header>
+
+<app-data-table
+  [config]="table"
+  [data]="education.data()"
+  [loading]="education.loading()"
+  [error]="education.error()"
+  [busyRowId]="deleter.busyId()"
+  (retry)="education.reload()"
+  (deleteRequest)="remove($event)"
+>
+  <a tableEmpty class="btn btn--primary" routerLink="/admin/education/new">New education</a>
+</app-data-table>

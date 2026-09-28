@@ -1,0 +1,17 @@
+<app-page-header title="Certificates" [subtitle]="(certificates.data()?.length ?? 0) + ' total'">
+  <a class="btn btn--primary" routerLink="/admin/certificates/new">
+    <app-icon name="plus" [size]="16" /> New certificate
+  </a>
+</app-page-header>
+
+<app-data-table
+  [config]="table"
+  [data]="certificates.data()"
+  [loading]="certificates.loading()"
+  [error]="certificates.error()"
+  [busyRowId]="deleter.busyId()"
+  (retry)="certificates.reload()"
+  (deleteRequest)="remove($event)"
+>
+  <a tableEmpty class="btn btn--primary" routerLink="/admin/certificates/new">New certificate</a>
+</app-data-table>

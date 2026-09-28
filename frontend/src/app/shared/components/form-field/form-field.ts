@@ -22,44 +22,8 @@ let nextId = 0;
  */
 @Component({
   selector: 'app-form-field',
-  template: `
-    <label class="field__label" [attr.for]="inputId">
-      {{ label() }}
-      @if (isRequired()) {
-        <span class="field__required" aria-hidden="true">*</span>
-      }
-    </label>
-    <ng-content />
-    @if (errorMessage(); as message) {
-      <p class="field__error" [id]="messageId">{{ message }}</p>
-    } @else if (hint()) {
-      <p class="field__hint" [id]="messageId">{{ hint() }}</p>
-    }
-  `,
-  styles: `
-    :host {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-2);
-      min-width: 0;
-    }
-    .field__label {
-      font-size: var(--text-sm);
-      font-weight: 600;
-    }
-    .field__required {
-      color: var(--color-danger);
-    }
-    .field__hint,
-    .field__error {
-      margin: 0;
-      font-size: var(--text-xs);
-      color: var(--color-text-muted);
-    }
-    .field__error {
-      color: var(--color-danger);
-    }
-  `,
+  templateUrl: './form-field.html',
+  styleUrl: './form-field.scss',
 })
 export class FormField {
   readonly label = input.required<string>();
