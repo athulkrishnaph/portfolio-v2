@@ -1,0 +1,127 @@
+<!-- ---- Hero ---------------------------------------------------------------- -->
+<section class="hero">
+  <div class="container">
+    @if (profile.loading()) {
+      <app-spinner label="Loading…" />
+    } @else if (profile.error(); as error) {
+      <app-error-state [error]="error" (retry)="profile.reload()" />
+    } @else {
+      @let p = profile.data();
+      <div class="hero__grid">
+        <div class="hero__text">
+          <span class="eyebrow">// hello, world — I'm</span>
+          <h1 class="hero__name">{{ p?.fullName || 'Welcome' }}</h1>
+          @if (p?.headline) {
+            <p class="hero__headline">{{ p?.headline }}</p>
+          }
+          @if (intro()) {
+            <p class="hero__intro">{{ intro() }}</p>
+          } @else if (!p) {
+            <p class="hero__intro">This portfolio is being set up. Check back soon!</p>
+          }
+
+          <div class="hero__actions">
+            <a class="btn btn--primary btn--lg" routerLink="/projects">
+              View my work <app-icon name="arrow-right" [size]="18" />
+            </a>
+            <a class="btn btn--secondary btn--lg" routerLink="/contact">Get in touch</a>
+            @if (p?.resumeUrl) {
+              <a class="btn btn--ghost btn--lg" [href]="p?.resumeUrl" target="_blank" rel="noopener">
+                <app-icon name="download" [size]="18" /> Resume
+              </a>
+            }
+          </div>
+
+          @if (p?.socialLinks?.length) {
+            <app-social-links [links]="p!.socialLinks" />
+          }
+        </div>
+
+        <div class="hero__visual" aria-hidden="true">
+          @if (p?.imageUrl) {
+            <img class="hero__photo" [src]="p?.imageUrl" alt="" />
+          } @else {
+            <div class="hero__code">
+              <span class="c-key">const</span> developer = {{ '{' }}<br />
+              &nbsp;&nbsp;name: <span class="c-str">"{{ p?.fullName || 'You' }}"</span>,<br />
+              @if (topSkills().length) {
+                &nbsp;&nbsp;skills: [@for (skill of topSkills(); track skill; let last = $last) {<span class="c-str">"{{ skill }}"</span>@if (!last) {, }}],<br />
+              }
+              &nbsp;&nbsp;available: <span class="c-key">true</span><br />
+              {{ '}' }};
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ---- Featured projects ------------------------------------------------------ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">// selected work</span>
+        <h2>Featured projects</h2>
+      </div>
+      <a class="link-arrow" routerLink="/projects">All projects <app-icon name="arrow-right" [size]="16" /></a>
+    </div>
+
+    @if (featured.loading()) {
+      <app-spinner label="Loading projects…" />
+    } @else if (featured.error(); as error) {
+      <app-error-state [error]="error" (retry)="featured.reload()" />
+    } @else if (featured.data()?.length) {
+      <div class="grid grid--3">
+        @for (project of featured.data(); track project.id) {
+          <app-project-card [project]="project" />
+        }
+      </div>
+    } @else {
+      <p class="text-muted">Featured projects will appear here soon.</p>
+    }
+  </div>
+</section>
+
+<!-- ---- Skills overview --------------------------------------------------------- -->
+@if (skillGroups().length) {
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">// toolbox</span>
+          <h2>Skills &amp; technologies</h2>
+        </div>
+        <a class="link-arrow" routerLink="/skills">All skills <app-icon name="arrow-right" [size]="16" /></a>
+      </div>
+      <div class="grid grid--3">
+        @for (group of skillGroups(); track group.category) {
+          <div class="card card--padded">
+            <h3 class="skills__category">{{ group.category }}</h3>
+            <ul class="tag-list">
+              @for (skill of group.skills; track skill.id) {
+                <li class="tag">{{ skill.name }}</li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+<!-- ---- Call to action ---------------------------------------------------------- -->
+<section class="section">
+  <div class="container">
+    <div class="cta card">
+      <div>
+        <h2 class="cta__title">Let's build something together</h2>
+        <p class="text-muted">Have a project in mind or just want to say hi? My inbox is always open.</p>
+      </div>
+      <a class="btn btn--primary btn--lg" routerLink="/contact">
+        <app-icon name="mail" [size]="18" /> Contact me
+      </a>
+    </div>
+  </div>
+</section>

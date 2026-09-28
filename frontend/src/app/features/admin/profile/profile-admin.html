@@ -1,0 +1,111 @@
+<app-page-header title="Profile" subtitle="Your name, bio, photo and links, shown across the public site." />
+
+@if (loading()) {
+  <app-spinner label="Loading profile…" />
+} @else if (loadError(); as error) {
+  <app-error-state [error]="error" (retry)="load()" />
+} @else {
+  <div class="sections">
+    <!-- ---- Profile ------------------------------------------------------------ -->
+    <form class="card card--padded form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+      @if (formErrors().length) {
+        <div class="alert alert--danger" role="alert">
+          <app-icon name="info" />
+          <div>
+            @for (message of formErrors(); track message) {
+              <div>{{ message }}</div>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="form-row">
+        <app-form-field label="Full name">
+          <input appInput class="input" formControlName="fullName" autocomplete="name" />
+        </app-form-field>
+        <app-form-field label="Headline" hint="e.g. Full-Stack Developer · Go & Angular">
+          <input appInput class="input" formControlName="headline" />
+        </app-form-field>
+      </div>
+
+      <app-form-field label="Bio" hint="Separate paragraphs with a blank line. The first paragraph is shown on the home page.">
+        <textarea appInput class="textarea" rows="8" formControlName="bio"></textarea>
+      </app-form-field>
+
+      <div class="form-row">
+        <app-form-field label="Public email" hint="Shown on the contact page.">
+          <input appInput class="input" type="email" formControlName="email" autocomplete="email" />
+        </app-form-field>
+        <app-form-field label="Location">
+          <input appInput class="input" formControlName="location" placeholder="e.g. Remote · Europe" />
+        </app-form-field>
+      </div>
+
+      <app-form-field label="Profile photo" [control]="form.controls.imageUrl">
+        <app-image-upload formControlName="imageUrl" />
+      </app-form-field>
+
+      <app-form-field label="Resume (PDF)" [control]="form.controls.resumeUrl">
+        <app-image-upload formControlName="resumeUrl" kind="document" />
+      </app-form-field>
+
+      <!-- Social links: a FormArray, one row per link -->
+      <fieldset class="links" formArrayName="socialLinks">
+        <legend class="section-title">Social links</legend>
+        <p class="text-muted">GitHub, LinkedIn, X and others. The order here is the display order.</p>
+
+        @for (link of links.controls; track link; let i = $index) {
+          <div class="link-row" [formGroupName]="i">
+            <app-form-field label="Platform">
+              <input appInput class="input" formControlName="platform" placeholder="GitHub" />
+            </app-form-field>
+            <app-form-field label="URL">
+              <input appInput class="input" type="url" formControlName="url" placeholder="https://github.com/…" />
+            </app-form-field>
+            <span>
+              <button type="button" class="btn btn--ghost btn--icon" [disabled]="i === 0" (click)="moveLinkUp(i)">
+                <app-icon name="chevron-up" [size]="16" [label]="'Move link ' + (i + 1) + ' up'" />
+              </button>
+              <button type="button" class="btn btn--ghost btn--icon" (click)="removeLink(i)">
+                <app-icon name="trash" [size]="16" [label]="'Remove link ' + (i + 1)" />
+              </button>
+            </span>
+          </div>
+        }
+        <div>
+          <button appButton type="button" size="sm" (click)="addLink(); form.markAsDirty()">
+            <app-icon name="plus" [size]="16" /> Add link
+          </button>
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <button appButton type="submit" variant="primary" [loading]="saving()">
+          <app-icon name="check" [size]="16" /> Save profile
+        </button>
+      </div>
+    </form>
+
+    <!-- ---- Password ------------------------------------------------------------- -->
+    <form class="card card--padded form" [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate>
+      <div>
+        <h2 class="section-title">Change password</h2>
+        <p class="text-muted">At least 10 characters. You stay signed in on this device.</p>
+      </div>
+      <app-form-field label="Current password">
+        <input appInput class="input" type="password" formControlName="currentPassword" autocomplete="current-password" />
+      </app-form-field>
+      <div class="form-row">
+        <app-form-field label="New password">
+          <input appInput class="input" type="password" formControlName="newPassword" autocomplete="new-password" />
+        </app-form-field>
+        <app-form-field label="Confirm new password">
+          <input appInput class="input" type="password" formControlName="confirmPassword" autocomplete="new-password" />
+        </app-form-field>
+      </div>
+      <div class="form-actions">
+        <button appButton type="submit" [loading]="savingPassword()">Change password</button>
+      </div>
+    </form>
+  </div>
+}

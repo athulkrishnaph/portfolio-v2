@@ -1,0 +1,12 @@
+# Keep the Docker build context small and free of secrets.
+.git
+.env
+.env.*
+!.env.example
+**/node_modules
+frontend/dist
+frontend/.angular
+backend/bin
+backend/uploads
+uploads
+*.exe

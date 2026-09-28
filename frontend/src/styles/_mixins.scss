@@ -1,0 +1,31 @@
+@use 'sass:map';
+
+// Shared SCSS helpers. Import in a component stylesheet with:
+//   @use 'mixins' as *;
+
+$breakpoints: (
+  sm: 640px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+);
+
+// Mobile-first media query: styles apply from the breakpoint upward.
+@mixin up($name) {
+  @media (min-width: map.get($breakpoints, $name)) {
+    @content;
+  }
+}
+
+// Styles for screens smaller than the breakpoint.
+@mixin down($name) {
+  @media (max-width: calc(#{map.get($breakpoints, $name)} - 0.02px)) {
+    @content;
+  }
+}
+
+// Visible keyboard focus ring (accessibility).
+@mixin focus-ring {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}

@@ -1,0 +1,43 @@
+<a class="skip-link" href="#admin-content">Skip to content</a>
+
+<app-sidebar
+  [open]="sidebarOpen()"
+  [collapsed]="sidebarCollapsed()"
+  (navigate)="closeSidebar()"
+  (closeDrawer)="closeSidebar()"
+  (toggleCollapsed)="toggleCollapsed()"
+/>
+
+@if (sidebarOpen()) {
+  <!-- Click-away backdrop for the mobile drawer -->
+  <div class="admin-backdrop" aria-hidden="true" (click)="closeSidebar()"></div>
+}
+
+<div class="admin-shell" [class.admin-shell--collapsed]="sidebarCollapsed()">
+  <header class="admin-topbar">
+    <!-- Mobile only: opens the navigation drawer (desktop uses the sidebar's own button) -->
+    <button
+      type="button"
+      class="btn btn--ghost btn--icon admin-topbar__menu"
+      aria-controls="admin-sidebar"
+      [attr.aria-expanded]="sidebarOpen()"
+      (click)="sidebarOpen.set(true)"
+    >
+      <app-icon name="menu" label="Open navigation" />
+    </button>
+
+    <span class="admin-topbar__title">Portfolio admin</span>
+
+    <div class="admin-topbar__user">
+      <app-theme-picker />
+      <span class="admin-topbar__email">{{ auth.user()?.email }}</span>
+      <button type="button" class="btn btn--secondary btn--sm" (click)="auth.logout()">
+        <app-icon name="logout" [size]="16" /> Log out
+      </button>
+    </div>
+  </header>
+
+  <main id="admin-content" class="admin-content" tabindex="-1">
+    <router-outlet />
+  </main>
+</div>

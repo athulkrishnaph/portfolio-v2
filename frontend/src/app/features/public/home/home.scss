@@ -1,0 +1,112 @@
+@use 'mixins' as *;
+
+.hero {
+  padding-block: var(--space-7);
+  // A soft glow that fully fades out well inside the section (no hard edges).
+  background: radial-gradient(
+    300px circle at 78% 45%,
+    color-mix(in srgb, var(--color-primary) 16%, transparent),
+    transparent 100%
+  );
+
+  @include up(md) {
+    padding-block: var(--space-8);
+  }
+}
+
+.hero__grid {
+  display: grid;
+  gap: var(--space-7);
+  align-items: center;
+
+  @include up(lg) {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+
+.hero__name {
+  margin-bottom: var(--space-2);
+}
+
+.hero__headline {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.hero__intro {
+  max-width: 600px;
+  font-size: var(--text-lg);
+  color: var(--color-text-muted);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: var(--space-5) 0;
+}
+
+.hero__visual {
+  display: none;
+
+  @include up(lg) {
+    display: block;
+  }
+}
+
+.hero__photo {
+  width: 100%;
+  max-width: 380px;
+  aspect-ratio: 1;
+  margin-inline: auto;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 6px solid var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.hero__code {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.9;
+
+  .c-key {
+    color: var(--color-primary);
+  }
+  .c-str {
+    color: var(--color-success);
+  }
+}
+
+.section--alt {
+  background: var(--color-surface-2);
+}
+
+.skills__category {
+  font-size: var(--text-base);
+  margin-bottom: var(--space-3);
+}
+
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: linear-gradient(135deg, var(--color-primary-soft), var(--color-surface));
+
+  p {
+    margin: 0;
+  }
+}
+
+.cta__title {
+  font-size: var(--text-2xl);
+}

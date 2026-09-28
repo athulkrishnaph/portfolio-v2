@@ -1,0 +1,38 @@
+<header class="navbar">
+  <nav class="container navbar__inner" aria-label="Main">
+    <a class="navbar__brand" routerLink="/" (click)="closeMenu()">
+      <span class="navbar__brand-mark" aria-hidden="true">&lt;/&gt;</span>
+      {{ profile()?.fullName || 'Portfolio' }}
+    </a>
+
+    <div class="navbar__end">
+      <ul id="primary-menu" class="navbar__links" [class.navbar__links--open]="menuOpen()">
+        @for (link of links; track link.path) {
+          <li>
+            <a
+              class="navbar__link"
+              [routerLink]="link.path"
+              routerLinkActive="navbar__link--active"
+              ariaCurrentWhenActive="page"
+              (click)="closeMenu()"
+              >{{ link.label }}</a
+            >
+          </li>
+        }
+      </ul>
+
+      <app-theme-picker />
+
+      <button
+        type="button"
+        class="navbar__toggle"
+        [attr.aria-expanded]="menuOpen()"
+        aria-controls="primary-menu"
+        (click)="toggleMenu()"
+      >
+        <span class="visually-hidden">{{ menuOpen() ? 'Close menu' : 'Open menu' }}</span>
+        <app-icon [name]="menuOpen() ? 'x' : 'menu'" [size]="22" />
+      </button>
+    </div>
+  </nav>
+</header>

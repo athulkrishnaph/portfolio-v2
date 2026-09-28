@@ -1,0 +1,51 @@
+# Local development: only PostgreSQL (the default).
+#   docker compose up -d
+#
+# Whole application (PostgreSQL + API serving the built site on :8080):
+#   docker compose --profile app up -d --build
+#
+# The database credentials below match the DATABASE_URL example in .env.example.
+# Values like ${JWT_SECRET} are read from the .env file next to this file.
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: portfolio-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-portfolio}
+      POSTGRES_DB: portfolio
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio -d portfolio"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    profiles: ["app"]
+    build: .
+    container_name: portfolio-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Inside Docker the database host is the service name, not localhost.
+      DATABASE_URL: postgres://portfolio:${POSTGRES_PASSWORD:-portfolio}@postgres:5432/portfolio?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET}  # required; the API refuses to start without a 32+ char secret
+      JWT_TTL: ${JWT_TTL:-2h}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8080}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:8080}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads:/app/uploads
+
+volumes:
+  postgres-data:
+  uploads:

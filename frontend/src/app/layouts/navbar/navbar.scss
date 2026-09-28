@@ -1,0 +1,108 @@
+@use 'mixins' as *;
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--navbar-height);
+  border-bottom: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-bg) 85%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 700;
+  color: var(--color-text);
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.navbar__brand-mark {
+  font-family: var(--font-mono);
+  color: var(--color-primary);
+}
+
+.navbar__end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+// Menu button (mobile only)
+.navbar__toggle {
+  display: inline-flex;
+  padding: var(--space-2);
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  cursor: pointer;
+
+  @include up(lg) {
+    display: none;
+  }
+}
+
+.navbar__links {
+  display: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  // Mobile: dropdown panel under the bar
+  &--open {
+    position: absolute;
+    top: var(--navbar-height);
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-3) var(--space-4) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg);
+  }
+
+  // Desktop: always visible, inline
+  @include up(lg) {
+    position: static;
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-1);
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+}
+
+.navbar__link {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast);
+
+  &:hover {
+    color: var(--color-text);
+    background: var(--color-surface-2);
+    text-decoration: none;
+  }
+
+  &--active {
+    color: var(--color-primary);
+  }
+}

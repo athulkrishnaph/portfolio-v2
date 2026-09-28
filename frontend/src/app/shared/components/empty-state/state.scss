@@ -1,0 +1,38 @@
+// Shared by empty-state and error-state.
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-7) var(--space-4);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.state__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--space-2);
+  border-radius: 50%;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+}
+
+.state--error .state__icon {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.state__title {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.state__message {
+  max-width: 420px;
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-muted);
+}

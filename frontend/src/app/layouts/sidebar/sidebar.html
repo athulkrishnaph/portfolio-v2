@@ -1,0 +1,67 @@
+<aside
+  id="admin-sidebar"
+  class="sidebar"
+  [class.sidebar--open]="open()"
+  [class.sidebar--collapsed]="collapsed()"
+>
+  <div class="sidebar__header">
+    <a class="sidebar__brand" routerLink="/admin/dashboard" (click)="navigate.emit()">
+      <span class="sidebar__brand-mark" aria-hidden="true">&lt;/&gt;</span>
+      <span class="sidebar__text">Admin</span>
+    </a>
+
+    <!-- Desktop: collapse to an icon rail / expand again -->
+    <button
+      type="button"
+      class="btn btn--ghost btn--icon sidebar__collapse"
+      [attr.aria-label]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+      [attr.aria-expanded]="!collapsed()"
+      aria-controls="admin-sidebar"
+      [title]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+      (click)="toggleCollapsed.emit()"
+    >
+      <app-icon name="panel-left" />
+    </button>
+
+    <!-- Mobile: close the drawer -->
+    <button
+      type="button"
+      class="btn btn--ghost btn--icon sidebar__close"
+      aria-label="Close menu"
+      (click)="closeDrawer.emit()"
+    >
+      <app-icon name="x" />
+    </button>
+  </div>
+
+  <nav aria-label="Admin">
+    <ul class="sidebar__links">
+      @for (link of links; track link.path) {
+        <li>
+          <a
+            class="sidebar__link"
+            [routerLink]="link.path"
+            routerLinkActive="sidebar__link--active"
+            ariaCurrentWhenActive="page"
+            [attr.title]="collapsed() ? link.label : null"
+            (click)="navigate.emit()"
+          >
+            <app-icon [name]="link.icon" [size]="18" />
+            <span class="sidebar__text">{{ link.label }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <a
+    class="sidebar__link sidebar__site-link"
+    routerLink="/"
+    target="_blank"
+    rel="noopener"
+    [attr.title]="collapsed() ? 'View public site' : null"
+  >
+    <app-icon name="external" [size]="18" />
+    <span class="sidebar__text">View public site</span>
+  </a>
+</aside>
