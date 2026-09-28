@@ -3,9 +3,10 @@
 .env.*
 !.env.example
 
-# Uploaded files (local storage)
-uploads/
-backend/uploads/
+# Uploaded files (local storage runtime folder only — NOT backend/internal/uploads,
+# which is source code). Anchored to the repo root so it can't match a
+# same-named folder elsewhere, e.g. backend/internal/uploads/.
+/backend/uploads/
 
 # Go build output
 backend/bin/
