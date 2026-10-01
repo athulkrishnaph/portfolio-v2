@@ -15,10 +15,41 @@
   background: var(--color-primary);
   color: var(--color-primary-contrast);
   box-shadow: var(--shadow-md);
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none; // let a finger drag the button instead of scrolling
+  user-select: none;
+  animation: chat-bob 2.4s ease-in-out infinite;
+
+  // Expanding ring to draw the eye.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--color-primary);
+    z-index: -1;
+    animation: chat-pulse 2.4s ease-out infinite;
+  }
 
   &:hover {
     background: var(--color-primary-hover);
+    animation-play-state: paused;
+  }
+  // Stop the attention-seeking once the chat is open or being moved.
+  &--dragging {
+    cursor: grabbing;
+  }
+  &--open,
+  &--dragging,
+  &--open::before,
+  &--dragging::before {
+    animation: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    &::before {
+      animation: none;
+    }
   }
   // On phones the open chat covers the screen and has its own close button.
   &--open {
@@ -28,15 +59,40 @@
   }
 }
 
+@keyframes chat-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  70%,
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+@keyframes chat-bob {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-6px);
+  }
+}
+
 .chat {
   position: fixed;
-  right: var(--space-4);
-  bottom: calc(var(--space-4) + 68px);
+  // The --chat-* vars are set when the launcher has been dragged elsewhere.
+  right: var(--chat-right, var(--space-4));
+  bottom: var(--chat-bottom, calc(var(--space-4) + 68px));
+  top: var(--chat-top, auto);
   z-index: 900;
   display: flex;
   flex-direction: column;
   width: min(400px, calc(100vw - 2rem));
-  height: min(620px, calc(100vh - 120px));
+  height: var(--chat-height, min(620px, calc(100vh - 120px)));
   overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);

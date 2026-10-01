@@ -51,11 +51,17 @@ func run() error {
 	defer db.Close()
 	slog.Info("connected to database")
 
-	// Local disk storage for uploads. To use cloud storage, create a
-	// different storage.Storage implementation here.
-	files, err := storage.NewLocal(cfg.UploadDirectory, cfg.PublicBaseURL)
-	if err != nil {
-		return err
+	// Uploads go to Supabase Storage when configured (they survive restarts
+	// on hosts without a persistent disk), otherwise to local disk.
+	var files storage.Storage
+	if cfg.SupabaseURL != "" {
+		files = storage.NewSupabase(cfg.SupabaseURL, cfg.SupabaseBucket, cfg.SupabaseServiceKey)
+		slog.Info("storing uploads in Supabase Storage", "bucket", cfg.SupabaseBucket)
+	} else {
+		files, err = storage.NewLocal(cfg.UploadDirectory, cfg.PublicBaseURL)
+		if err != nil {
+			return err
+		}
 	}
 
 	srv := &http.Server{

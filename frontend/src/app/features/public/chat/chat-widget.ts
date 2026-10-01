@@ -8,9 +8,9 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Router, RouterLink } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { Subscription, filter } from 'rxjs';
 
 import { ApiError } from '../../../core/api/api-error';
 import { ChatSource, ChatTurn } from '../../../core/models';
@@ -30,6 +30,14 @@ export interface ChatMessage {
 }
 
 const STORAGE_KEY = 'portfolio.chat';
+const LAUNCHER_SIZE = 56;
+const MARGIN = 8;
+const DRAG_THRESHOLD = 5;
+
+interface LauncherPos {
+  right: number;
+  bottom: number;
+}
 const MAX_STORED_MESSAGES = 30;
 /** Earlier messages sent along for follow-up questions (the API keeps the last few). */
 const HISTORY_TURNS = 6;
@@ -46,6 +54,7 @@ const HISTORY_TURNS = 6;
   imports: [RouterLink, Icon, MarkdownPipe],
   templateUrl: './chat-widget.html',
   styleUrl: './chat-widget.scss',
+  host: { '(window:resize)': 'onResize()' },
 })
 export class ChatWidget {
   private readonly chat = inject(ChatService);
@@ -75,6 +84,42 @@ export class ChatWidget {
   private readonly input = viewChild<ElementRef<HTMLTextAreaElement>>('input');
   private readonly launcher = viewChild<ElementRef<HTMLButtonElement>>('launcher');
 
+  /** Launcher distance from the viewport's right/bottom edges; null = default corner. Not saved, so a reload resets it. */
+  protected readonly pos = signal<LauncherPos | null>(null);
+  protected readonly dragging = signal(false);
+  private readonly viewport = signal({ w: window.innerWidth, h: window.innerHeight });
+
+  /** Launcher placement, kept inside the viewport. */
+  protected readonly launcherStyle = computed(() => {
+    const p = this.clampPos(this.pos());
+    return p ? { right: `${p.right}px`, bottom: `${p.bottom}px` } : null;
+  });
+
+  /** Opens the panel next to the launcher, above or below depending on where it sits. */
+  protected readonly panelStyle = computed(() => {
+    const p = this.clampPos(this.pos());
+    if (!p) return null;
+    const { w, h } = this.viewport();
+    const panelWidth = Math.min(400, w - 32);
+    const right = Math.min(p.right, Math.max(MARGIN, w - panelWidth - MARGIN));
+    const gap = LAUNCHER_SIZE + 12;
+    const style: Record<string, string> = { '--chat-right': `${right}px` };
+    if (p.bottom + LAUNCHER_SIZE / 2 < h / 2) {
+      const bottom = p.bottom + gap;
+      style['--chat-bottom'] = `${bottom}px`;
+      style['--chat-top'] = 'auto';
+      style['--chat-height'] = `${Math.min(620, h - bottom - MARGIN)}px`;
+    } else {
+      const top = h - p.bottom - LAUNCHER_SIZE + gap;
+      style['--chat-top'] = `${top}px`;
+      style['--chat-bottom'] = 'auto';
+      style['--chat-height'] = `${Math.min(620, h - top - MARGIN)}px`;
+    }
+    return style;
+  });
+
+  private drag: { startX: number; startY: number; right: number; bottom: number; moved: boolean } | null = null;
+  private suppressClick = false;
   private request?: Subscription;
   private nextId = Math.max(0, ...this.messages().map((m) => m.id)) + 1;
 
@@ -100,10 +145,70 @@ export class ChatWidget {
       }
     });
 
+    // Moving to another page puts the button back in its default corner.
+    this.router.events
+      .pipe(filter((e) => e instanceof NavigationEnd), takeUntilDestroyed())
+      .subscribe(() => this.pos.set(null));
+
     inject(DestroyRef).onDestroy(() => this.request?.unsubscribe());
   }
 
+  protected onResize(): void {
+    this.viewport.set({ w: window.innerWidth, h: window.innerHeight });
+  }
+
+  protected onDragStart(event: PointerEvent): void {
+    if (event.button !== 0) return;
+    const current = this.clampPos(this.pos()) ?? this.defaultPos();
+    this.drag = {
+      startX: event.clientX,
+      startY: event.clientY,
+      right: current.right,
+      bottom: current.bottom,
+      moved: false,
+    };
+    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+  }
+
+  protected onDragMove(event: PointerEvent): void {
+    const d = this.drag;
+    if (!d) return;
+    const dx = event.clientX - d.startX;
+    const dy = event.clientY - d.startY;
+    // Small movements stay clicks.
+    if (!d.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+    d.moved = true;
+    this.dragging.set(true);
+    this.pos.set(this.clampPos({ right: d.right - dx, bottom: d.bottom - dy }));
+  }
+
+  protected onDragEnd(): void {
+    const d = this.drag;
+    this.drag = null;
+    if (!d?.moved) return;
+    this.dragging.set(false);
+    // The click that follows a drag must not toggle the chat.
+    this.suppressClick = true;
+    setTimeout(() => (this.suppressClick = false));
+  }
+
+  private defaultPos(): LauncherPos {
+    // Matches the CSS default (--space-4 = 1rem).
+    const margin = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    return { right: margin, bottom: margin };
+  }
+
+  private clampPos(p: LauncherPos | null): LauncherPos | null {
+    if (!p) return null;
+    const { w, h } = this.viewport();
+    return {
+      right: Math.round(Math.min(Math.max(p.right, MARGIN), Math.max(MARGIN, w - LAUNCHER_SIZE - MARGIN))),
+      bottom: Math.round(Math.min(Math.max(p.bottom, MARGIN), Math.max(MARGIN, h - LAUNCHER_SIZE - MARGIN))),
+    };
+  }
+
   protected toggle(): void {
+    if (this.suppressClick) return;
     if (this.open()) {
       this.close();
     } else {

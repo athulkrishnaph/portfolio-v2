@@ -25,6 +25,11 @@ type Config struct {
 	CORSAllowedOrigins []string
 	MigrationsDir      string
 	SeedsDir           string
+	// Supabase Storage keeps uploads outside the server's disk. Used when
+	// SupabaseURL is set; otherwise files go to UploadDirectory.
+	SupabaseURL        string
+	SupabaseBucket     string
+	SupabaseServiceKey string
 	// TrustProxy makes the API read the client IP from X-Real-IP /
 	// X-Forwarded-For. Enable only behind a reverse proxy you control.
 	TrustProxy bool
@@ -98,6 +103,9 @@ func Load() (*Config, error) {
 		CORSAllowedOrigins: splitList(getEnv("CORS_ALLOWED_ORIGINS", "http://localhost:4200")),
 		MigrationsDir:      getEnv("MIGRATIONS_DIR", "../database/migrations"),
 		SeedsDir:           getEnv("SEEDS_DIR", "../database/seeds"),
+		SupabaseURL:        strings.TrimRight(os.Getenv("SUPABASE_URL"), "/"),
+		SupabaseBucket:     getEnv("SUPABASE_BUCKET", "uploads"),
+		SupabaseServiceKey: os.Getenv("SUPABASE_SERVICE_KEY"),
 		TrustProxy:         getEnv("TRUST_PROXY", "false") == "true",
 		StaticDir:          os.Getenv("STATIC_DIR"),
 	}
@@ -124,6 +132,9 @@ func (c *Config) validate() error {
 	}
 	if c.JWTTTL <= 0 {
 		errs = append(errs, errors.New("JWT_TTL must be positive"))
+	}
+	if c.SupabaseURL != "" && c.SupabaseServiceKey == "" {
+		errs = append(errs, errors.New("SUPABASE_SERVICE_KEY is required when SUPABASE_URL is set"))
 	}
 	if err := errors.Join(errs...); err != nil {
 		return fmt.Errorf("config: %w", err)

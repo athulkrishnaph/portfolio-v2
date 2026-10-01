@@ -5,6 +5,7 @@ import {
   effect,
   input,
   output,
+  signal,
   viewChild,
 } from '@angular/core';
 
@@ -14,7 +15,9 @@ let nextId = 0;
 
 /**
  * Accessible modal built on the native <dialog> element, which provides
- * focus trapping, Escape-to-close and a backdrop for free.
+ * focus trapping, Escape-to-close and a backdrop for free. Clicking the
+ * backdrop does not close it (the dialog gives a small zoom nudge instead);
+ * only the ✕ button (or Escape) does.
  *
  *   <app-modal [open]="editing()" title="Edit skill" (closed)="editing.set(false)">
  *     ...content...
@@ -30,11 +33,16 @@ let nextId = 0;
 export class Modal {
   readonly open = input(false);
   readonly title = input.required<string>();
-  /** Emitted whenever the dialog closes (button, Escape or backdrop click). */
+  /**
+   * Emitted whenever the dialog closes: the ✕ button or the Escape key.
+   * Clicking the backdrop deliberately does nothing, so a stray click can't
+   * throw away what was typed in a form.
+   */
   readonly closed = output<void>();
 
   protected readonly titleId = `modal-title-${nextId++}`;
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
+  protected readonly nudging = signal(false);
 
   constructor() {
     // Keep the native dialog in sync with the `open` input.
@@ -49,9 +57,9 @@ export class Modal {
   }
 
   /** A click on the <dialog> itself (not its content) is a click on the backdrop. */
-  protected closeOnBackdrop(event: MouseEvent): void {
+  protected nudgeOnBackdrop(event: MouseEvent): void {
     if (event.target === this.dialog().nativeElement) {
-      this.dialog().nativeElement.close();
+      this.nudging.set(true);
     }
   }
 }

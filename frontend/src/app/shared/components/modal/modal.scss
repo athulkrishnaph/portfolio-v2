@@ -7,6 +7,19 @@
   color: var(--color-text);
   box-shadow: var(--shadow-md);
 }
+.modal--nudge {
+  animation: modal-nudge 0.25s ease-in-out;
+}
+@keyframes modal-nudge {
+  50% {
+    transform: scale(1.03);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .modal--nudge {
+    animation-duration: 0.01ms;
+  }
+}
 .modal::backdrop {
   background: rgb(15 23 42 / 0.55);
   backdrop-filter: blur(2px);

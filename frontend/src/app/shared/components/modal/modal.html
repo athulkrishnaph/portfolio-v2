@@ -2,8 +2,10 @@
   #dialog
   class="modal"
   [attr.aria-labelledby]="titleId"
+  [class.modal--nudge]="nudging()"
   (close)="closed.emit()"
-  (click)="closeOnBackdrop($event)"
+  (click)="nudgeOnBackdrop($event)"
+  (animationend)="nudging.set(false)"
 >
   <div class="modal__panel">
     <header class="modal__header">
