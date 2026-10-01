@@ -63,6 +63,9 @@ func registerRoutes(mux *http.ServeMux, deps Deps) {
 
 	tokens := auth.NewTokenManager(cfg.JWTSecret, cfg.JWTTTL)
 	authSvc := auth.NewService(auth.NewRepository(db), tokens)
+	if cfg.GoogleClientID != "" {
+		authSvc.EnableGoogle(auth.NewGoogleVerifier(cfg.GoogleClientID))
+	}
 	loginLimit := middleware.RateLimit(loginAttemptLimit, loginAttemptWindow, middleware.ClientIP(cfg.TrustProxy))
 	auth.NewHandler(authSvc).Routes(mux, loginLimit)
 

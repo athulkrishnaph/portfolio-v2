@@ -16,6 +16,10 @@ var (
 	ErrInvalidCredentials = errors.New("invalid email or password")
 	ErrUserNotFound       = errors.New("user not found")
 	ErrEmailTaken         = errors.New("email is already registered")
+	// ErrGoogleNotAllowed means the Google account is valid but is not an admin.
+	ErrGoogleNotAllowed = errors.New("this Google account is not an admin")
+	// ErrGoogleDisabled means GOOGLE_CLIENT_ID is not configured.
+	ErrGoogleDisabled = errors.New("Google sign-in is not enabled")
 )
 
 const (
@@ -34,15 +38,66 @@ type userStore interface {
 	UpdatePassword(ctx context.Context, id int64, passwordHash string) (User, error)
 }
 
+// googleVerifier is the part of GoogleVerifier the service needs (faked in tests).
+type googleVerifier interface {
+	ClientID() string
+	Verify(ctx context.Context, idToken string) (GoogleIdentity, error)
+}
+
 // Service contains the authentication business logic.
 type Service struct {
 	users  userStore
 	tokens *TokenManager
+	google googleVerifier // nil when Google sign-in is off
 }
 
 // NewService creates a Service.
 func NewService(users userStore, tokens *TokenManager) *Service {
 	return &Service{users: users, tokens: tokens}
+}
+
+// EnableGoogle turns on Google sign-in alongside the password login.
+func (s *Service) EnableGoogle(v googleVerifier) {
+	s.google = v
+}
+
+// GoogleClientID is the OAuth client ID for the sign-in button, or "" when
+// Google sign-in is off.
+func (s *Service) GoogleClientID() string {
+	if s.google == nil {
+		return ""
+	}
+	return s.google.ClientID()
+}
+
+// LoginWithGoogle verifies a Google ID token and signs in the admin account
+// with the same (verified) email. It never creates accounts.
+func (s *Service) LoginWithGoogle(ctx context.Context, in GoogleLoginInput) (Session, error) {
+	if s.google == nil {
+		return Session{}, ErrGoogleDisabled
+	}
+	v := validate.New()
+	v.Check(validate.NotBlank(in.Credential), "credential", "Google credential is required")
+	if err := v.Err(); err != nil {
+		return Session{}, err
+	}
+
+	identity, err := s.google.Verify(ctx, in.Credential)
+	if err != nil {
+		return Session{}, err
+	}
+	// An unverified email could belong to someone else.
+	if !identity.EmailVerified {
+		return Session{}, ErrGoogleNotAllowed
+	}
+	user, err := s.users.GetByEmail(ctx, identity.Email)
+	if errors.Is(err, ErrUserNotFound) {
+		return Session{}, ErrGoogleNotAllowed
+	}
+	if err != nil {
+		return Session{}, err
+	}
+	return s.newSession(user)
 }
 
 // Login checks the credentials and returns a new session token.

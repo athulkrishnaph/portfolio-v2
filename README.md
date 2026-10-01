@@ -122,6 +122,8 @@ Then edit `.env`. The Go programs read `.env` from the repo root (they also chec
 | `SERVER_PORT` | no | `8080` | API port |
 | `UPLOAD_DIRECTORY` | no | `./uploads` | Where uploaded images and PDFs are stored |
 | `PUBLIC_BASE_URL` | no | `http://localhost:8080` | Public URL of the API, used to build upload URLs |
+| `SUPABASE_URL` / `SUPABASE_BUCKET` / `SUPABASE_SERVICE_KEY` | no | – / `uploads` / – | Store uploads in a public Supabase Storage bucket instead of `UPLOAD_DIRECTORY` (survives restarts on hosts without a persistent disk) |
+| `GOOGLE_CLIENT_ID` | no | – | Adds "Sign in with Google" to the admin login, next to the password login (see *Google sign-in*) |
 | `CORS_ALLOWED_ORIGINS` | no | `http://localhost:4200` | Comma-separated browser origins (only needed when the frontend is on another domain) |
 | `TRUST_PROXY` | no | `false` | `true` only behind your own reverse proxy (client IP from `X-Forwarded-For`) |
 | `STATIC_DIR` | no | – | Production: built Angular app for the API to serve |
@@ -213,6 +215,16 @@ go run ./cmd/createadmin -email you@example.com -password 'new-password' -reset
 ```
 
 Passwords must be at least 10 characters. The placeholder from `.env.example` is refused. Once logged in, you can change the password in **Admin → Profile**, which signs out every other session.
+
+#### Google sign-in (optional)
+
+The login page can also offer **Sign in with Google**. The password login keeps working. Google only signs in **existing** admin accounts: the Google account's verified email must match an account created above, and any other Google account is refused.
+
+1. In [Google Cloud Console](https://console.cloud.google.com/apis/credentials), create a project, then **Create credentials → OAuth client ID → Web application** (free, no card). You may be asked to fill in the OAuth consent screen first: app name and your email are enough.
+2. Under **Authorized JavaScript origins** add `http://localhost:4200` (and `http://localhost` too) plus your live site, e.g. `https://your-domain.com`. No redirect URIs are needed.
+3. Set `GOOGLE_CLIENT_ID=<the client ID>.apps.googleusercontent.com` and restart the API.
+
+The client ID is public (it ends up in the browser); there is no client secret to keep. The API checks each Google token's signature, audience, issuer and expiry before signing in. Changing the admin password also ends sessions started with Google.
 
 ---
 
@@ -503,6 +515,8 @@ Admin endpoints need `Authorization: Bearer <token>` from `POST /api/auth/login`
 |---|---|---|---|
 | GET | `/api/health` | – | Includes a database ping |
 | POST | `/api/auth/login` | – | `{email, password}` → `{token, expiresAt, user}`. Rate limited: 10 attempts / 15 min per IP |
+| POST | `/api/auth/google` | – | `{credential}` (Google ID token) → `{token, expiresAt, user}`. Same rate limit as login |
+| GET | `/api/auth/options` | – | `{googleClientId}`: empty when Google sign-in is off |
 | GET | `/api/auth/me` | ✔ | Current admin |
 | PUT | `/api/auth/password` | ✔ | `{currentPassword, newPassword}` → new session; older tokens stop working |
 | GET | `/api/projects` | – | `?featured=true` for featured only |

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Observable, map, tap } from 'rxjs';
 
 import { ApiClient } from '../api/api-client';
-import { ChangePasswordInput, LoginInput, Session, User } from '../models';
+import { AuthOptions, ChangePasswordInput, LoginInput, Session, User } from '../models';
 
 const STORAGE_KEY = 'portfolio.session';
 const MAX_TIMEOUT_MS = 2_147_483_647;
@@ -53,6 +53,19 @@ export class AuthService {
       tap((session) => this.setSession(session)),
       map((session) => session.user),
     );
+  }
+
+  /** Signs in with the ID token ("credential") from Google Identity Services. */
+  loginWithGoogle(credential: string): Observable<User> {
+    return this.api.post<Session>('/api/auth/google', { credential }).pipe(
+      tap((session) => this.setSession(session)),
+      map((session) => session.user),
+    );
+  }
+
+  /** Sign-in methods enabled on the server. */
+  options(): Observable<AuthOptions> {
+    return this.api.get<AuthOptions>('/api/auth/options');
   }
 
   /** Changes the password. The server returns a new token (old ones stop working). */

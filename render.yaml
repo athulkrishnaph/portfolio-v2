@@ -31,3 +31,14 @@ services:
       # AI assistant (optional): leave GEMINI_API_KEY unset to disable it.
       - key: GEMINI_API_KEY
         sync: false
+      # Uploads in Supabase Storage (optional, recommended: Render's free
+      # disk is wiped on every restart). Needs a public bucket.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_BUCKET
+        value: uploads
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      # "Sign in with Google" on the admin login (optional).
+      - key: GOOGLE_CLIENT_ID
+        sync: false

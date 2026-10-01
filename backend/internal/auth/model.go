@@ -3,6 +3,7 @@
 // Flow:
 //
 //	POST /api/auth/login   email + password → bcrypt check → signed JWT
+//	POST /api/auth/google  Google ID token → verified email of an existing admin → signed JWT
 //	later requests         Authorization: Bearer <jwt> → RequireAuth middleware
 //	                       verifies the signature/expiry and loads the user
 //
@@ -28,6 +29,19 @@ type User struct {
 type LoginInput struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+// GoogleLoginInput is the body of POST /api/auth/google: the ID token from
+// Google Identity Services.
+type GoogleLoginInput struct {
+	Credential string `json:"credential"`
+}
+
+// AuthOptions is returned by GET /api/auth/options: which sign-in methods
+// the login page should offer.
+type AuthOptions struct {
+	// GoogleClientID is empty when Google sign-in is off.
+	GoogleClientID string `json:"googleClientId"`
 }
 
 // ChangePasswordInput is the body of PUT /api/auth/password.

@@ -18,6 +18,12 @@ export interface LoginInput {
   password: string;
 }
 
+/** Which sign-in methods the login page offers (GET /api/auth/options). */
+export interface AuthOptions {
+  /** Empty when Google sign-in is off. */
+  googleClientId: string;
+}
+
 export interface ChangePasswordInput {
   currentPassword: string;
   newPassword: string;

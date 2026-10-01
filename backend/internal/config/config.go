@@ -25,6 +25,9 @@ type Config struct {
 	CORSAllowedOrigins []string
 	MigrationsDir      string
 	SeedsDir           string
+	// GoogleClientID enables "Sign in with Google" on the admin login (next to
+	// the password login). Empty disables it.
+	GoogleClientID string
 	// Supabase Storage keeps uploads outside the server's disk. Used when
 	// SupabaseURL is set; otherwise files go to UploadDirectory.
 	SupabaseURL        string
@@ -103,6 +106,7 @@ func Load() (*Config, error) {
 		CORSAllowedOrigins: splitList(getEnv("CORS_ALLOWED_ORIGINS", "http://localhost:4200")),
 		MigrationsDir:      getEnv("MIGRATIONS_DIR", "../database/migrations"),
 		SeedsDir:           getEnv("SEEDS_DIR", "../database/seeds"),
+		GoogleClientID:     strings.TrimSpace(os.Getenv("GOOGLE_CLIENT_ID")),
 		SupabaseURL:        strings.TrimRight(os.Getenv("SUPABASE_URL"), "/"),
 		SupabaseBucket:     getEnv("SUPABASE_BUCKET", "uploads"),
 		SupabaseServiceKey: os.Getenv("SUPABASE_SERVICE_KEY"),

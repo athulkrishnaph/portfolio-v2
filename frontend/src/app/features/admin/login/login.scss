@@ -37,6 +37,86 @@
   top: 4px;
   right: 4px;
 }
+.login__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-top: 1px solid var(--color-border);
+  }
+}
+// "Sign in with Google": our styled face, with Google's official button
+// (an iframe) stretched invisibly over it to receive the click.
+.google-btn {
+  position: relative;
+  border-radius: var(--radius-sm);
+}
+.google-btn__face {
+  width: 100%;
+  gap: var(--space-3);
+  // Not clickable itself until Google's button is ready on top of it.
+  cursor: default;
+  opacity: 0.6;
+}
+.google-btn--ready .google-btn__face {
+  cursor: pointer;
+  opacity: 1;
+}
+.google-btn__logo {
+  flex-shrink: 0;
+}
+.google-btn__target {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  // Google's button is 40px tall; stretch it to our 48px button so the
+  // whole face is clickable.
+  transform: scaleY(1.2);
+}
+// Hover and keyboard focus land on Google's iframe; show them on our face.
+.google-btn--ready:hover .google-btn__face {
+  background: var(--color-surface-2);
+}
+.google-btn:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+.google-btn--busy {
+  .google-btn__face {
+    opacity: 0.7;
+  }
+  .google-btn__target {
+    pointer-events: none;
+  }
+}
+.google-btn__spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: google-spin 0.7s linear infinite;
+}
+@keyframes google-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .google-btn__spinner {
+    animation-duration: 2s;
+  }
+}
 .login__back {
   display: inline-flex;
   align-items: center;
