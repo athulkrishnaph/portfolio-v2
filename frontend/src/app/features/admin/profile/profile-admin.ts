@@ -60,6 +60,8 @@ export class ProfileAdmin implements OnInit {
   protected readonly saving = signal(false);
   protected readonly formErrors = signal<string[]>([]);
   protected readonly savingPassword = signal(false);
+  /** The profile as last loaded or saved; Cancel returns to it. */
+  private saved: Profile | null = null;
 
   protected readonly form = this.fb.group({
     fullName: ['', [Validators.required, AppValidators.notBlank, Validators.maxLength(100)]],
@@ -154,6 +156,19 @@ export class ProfileAdmin implements OnInit {
     });
   }
 
+  /** Discards unsaved edits: back to the last loaded or saved profile. */
+  protected cancel(): void {
+    this.formErrors.set([]);
+    if (this.saved) {
+      this.fill(this.saved);
+    } else {
+      this.links.clear();
+      this.form.reset();
+    }
+    // Hide validation messages from the discarded edits.
+    this.form.markAsUntouched();
+  }
+
   protected changePassword(): void {
     if (this.passwordForm.invalid) {
       revealErrors(this.passwordForm);
@@ -185,6 +200,7 @@ export class ProfileAdmin implements OnInit {
   }
 
   private fill(profile: Profile): void {
+    this.saved = profile;
     this.links.clear();
     profile.socialLinks.forEach((link) => this.addLink(link));
     this.form.patchValue({

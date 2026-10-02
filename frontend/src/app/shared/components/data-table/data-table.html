@@ -100,18 +100,12 @@
               <td class="table__actions">
                 @if (cfg.actions!.length > 1) {
                   <!-- Two or more actions: one "⋮" button that opens the actions menu -->
-                  <button
-                    type="button"
-                    class="btn btn--ghost btn--icon"
-                    aria-haspopup="menu"
-                    [attr.aria-expanded]="menu()?.row === row"
-                    [attr.aria-label]="'More actions for ' + rowTitle(row)"
-                    title="More actions"
+                  <app-actions-menu
+                    [actions]="menuActions(row)"
+                    [label]="'More actions for ' + rowTitle(row)"
                     [disabled]="isBusy(row)"
-                    (click)="toggleMenu(row, $event)"
-                  >
-                    <app-icon name="more-vertical" />
-                  </button>
+                    (select)="onMenuSelect($event, row)"
+                  />
                 } @else {
                   <!-- A single action is shown directly -->
                   @let a = cfg.actions![0];
@@ -142,35 +136,4 @@
   @if (cfg.pageSize) {
     <app-pagination [total]="rows().length" [pageSize]="cfg.pageSize" [(page)]="page" />
   }
-}
-
-<!-- The actions menu of the row whose "⋮" was clicked -->
-@if (menu(); as m) {
-  <div
-    #menu
-    class="row-menu"
-    role="menu"
-    [attr.aria-label]="'Actions for ' + rowTitle(m.row)"
-    [style.top.px]="m.top"
-    [style.left.px]="m.left"
-    (keydown)="onMenuKeydown($event)"
-  >
-    @for (a of cfg.actions; track a.id) {
-      @if (a.link) {
-        <a role="menuitem" class="row-menu__item" [routerLink]="link(a.link(m.row))" (click)="closeMenu()">
-          <app-icon [name]="a.icon" [size]="16" /> {{ a.text }}
-        </a>
-      } @else {
-        <button
-          role="menuitem"
-          type="button"
-          class="row-menu__item"
-          [class.row-menu__item--danger]="a.danger"
-          (click)="chooseFromMenu(a, m.row)"
-        >
-          <app-icon [name]="a.icon" [size]="16" /> {{ a.text }}
-        </button>
-      }
-    }
-  </div>
 }

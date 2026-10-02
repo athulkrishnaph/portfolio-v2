@@ -16,20 +16,22 @@
         <ul class="group__list">
           @for (skill of group.skills; track skill.id) {
             <li class="group__item">
-              <span>{{ skill.name }} <span class="text-muted order">#{{ skill.displayOrder }}</span></span>
-              <span>
-                <button type="button" class="btn btn--ghost btn--icon" (click)="openEdit(skill)">
-                  <app-icon name="edit" [size]="16" [label]="'Edit ' + skill.name" />
-                </button>
-                <button
-                  type="button"
-                  class="btn btn--ghost btn--icon"
-                  [disabled]="deleter.busyId() === skill.id"
-                  (click)="remove(skill)"
-                >
-                  <app-icon name="trash" [size]="16" [label]="'Delete ' + skill.name" />
-                </button>
+              <span class="skill">
+                <!-- Every name has a tooltip with the full name; long names are shortened on screen. -->
+                @if (isLong(skill.name)) {
+                  <span class="skill__name" [title]="skill.name" aria-hidden="true">{{ skill.name | truncate: maxNameLength }}</span>
+                  <span class="visually-hidden">{{ skill.name }}</span>
+                } @else {
+                  <span class="skill__name" [title]="skill.name">{{ skill.name }}</span>
+                }
+                <span class="text-muted order">#{{ skill.displayOrder }}</span>
               </span>
+              <app-actions-menu
+                [actions]="skillActions"
+                [label]="'More actions for ' + skill.name"
+                [disabled]="deleter.busyId() === skill.id"
+                (select)="onAction($event, skill)"
+              />
             </li>
           }
         </ul>

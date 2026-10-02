@@ -1,3 +1,5 @@
+@use 'mixins' as *;
+
 .setup {
   margin-bottom: var(--space-5);
 }
@@ -5,6 +7,26 @@
   display: grid;
   gap: var(--space-4);
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+// Phones: two compact cards per row instead of one tall card each.
+@include down(sm) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  .stat.card--padded {
+    padding: var(--space-4);
+  }
+  .stat__icon {
+    width: 34px;
+    height: 34px;
+  }
+  .stat__count {
+    font-size: var(--text-2xl);
+  }
+  .stat__label {
+    font-size: var(--text-sm);
+  }
 }
 .stat {
   display: flex;

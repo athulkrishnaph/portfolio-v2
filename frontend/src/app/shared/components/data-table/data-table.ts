@@ -1,20 +1,9 @@
-import {
-  Component,
-  ElementRef,
-  Injector,
-  afterNextRender,
-  computed,
-  inject,
-  input,
-  linkedSignal,
-  output,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, computed, input, linkedSignal, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { ApiError } from '../../../core/api/api-error';
 import { DateRangePipe, MonthYearPipe } from '../../pipes/date-range.pipe';
+import { ActionsMenu, MenuAction } from '../actions-menu/actions-menu';
 import { EmptyState } from '../empty-state/empty-state';
 import { ErrorState } from '../error-state/error-state';
 import { Icon } from '../icon/icon';
@@ -53,18 +42,11 @@ import {
  */
 @Component({
   selector: 'app-data-table',
-  imports: [RouterLink, Icon, Spinner, ErrorState, EmptyState, Pagination, MonthYearPipe, DateRangePipe],
+  imports: [RouterLink, Icon, Spinner, ErrorState, EmptyState, Pagination, ActionsMenu, MonthYearPipe, DateRangePipe],
   templateUrl: './data-table.html',
   styleUrl: './data-table.scss',
-  host: {
-    '(document:click)': 'onDocumentClick($event)',
-    // The menu is positioned for the current viewport; close it when that changes.
-    '(window:scroll)': 'closeMenu()',
-    '(window:resize)': 'closeMenu()',
-  },
 })
 export class DataTable<T extends object> {
-  private readonly injector = inject(Injector);
   readonly config = input.required<TableConfig<T>>();
   readonly data = input<T[] | null | undefined>([]);
   readonly loading = input(false);
@@ -170,83 +152,20 @@ export class DataTable<T extends object> {
     return first ? this.text(first, row) : '';
   }
 
-  // ---- Actions menu ("⋮") ------------------------------------------------------
-
-  /** The open menu: which row, and where on screen (fixed position). */
-  protected readonly menu = signal<{ row: T; top: number; left: number; trigger: HTMLElement } | null>(null);
-  private readonly menuEl = viewChild<ElementRef<HTMLElement>>('menu');
-
-  protected toggleMenu(row: T, event: MouseEvent): void {
-    if (this.menu()?.row === row) {
-      this.closeMenu();
-      return;
-    }
-    // position: fixed, so the table's scroll container cannot clip the menu.
-    // Opens below the button, or above it when there is no room below.
-    const trigger = event.currentTarget as HTMLElement;
-    const rect = trigger.getBoundingClientRect();
-    const height = (this.config().actions?.length ?? 0) * ITEM_HEIGHT + 12;
-    const top =
-      rect.bottom + 4 + height <= window.innerHeight ? rect.bottom + 4 : Math.max(8, rect.top - 4 - height);
-    const left = Math.max(8, Math.min(rect.right - MENU_WIDTH, window.innerWidth - MENU_WIDTH - 8));
-    this.menu.set({ row, top, left, trigger });
-    afterNextRender(() => this.menuItems()[0]?.focus(), { injector: this.injector });
+  /** The row's actions as "⋮" menu entries (links resolved for this row). */
+  protected menuActions(row: T): MenuAction[] {
+    return (this.config().actions ?? []).map((a) => ({
+      id: a.id,
+      icon: a.icon,
+      text: a.text,
+      link: a.link?.(row),
+      danger: a.danger,
+    }));
   }
 
-  closeMenu(returnFocus = false): void {
-    const open = this.menu();
-    if (!open) return;
-    this.menu.set(null);
-    if (returnFocus) open.trigger.focus();
-  }
-
-  protected chooseFromMenu(action: TableAction<T>, row: T): void {
-    this.closeMenu(true);
-    this.runAction(action, row);
-  }
-
-  /** Arrow keys move between items; Escape closes and returns to the ⋮ button. */
-  protected onMenuKeydown(event: KeyboardEvent): void {
-    const items = this.menuItems();
-    const index = items.indexOf(document.activeElement as HTMLElement);
-    const focus = (i: number) => items[(i + items.length) % items.length]?.focus();
-    switch (event.key) {
-      case 'ArrowDown':
-        focus(index + 1);
-        break;
-      case 'ArrowUp':
-        focus(index - 1);
-        break;
-      case 'Home':
-        focus(0);
-        break;
-      case 'End':
-        focus(items.length - 1);
-        break;
-      case 'Escape':
-        this.closeMenu(true);
-        break;
-      case 'Tab':
-        this.closeMenu();
-        return; // let Tab move focus normally
-      default:
-        return;
-    }
-    event.preventDefault();
-  }
-
-  /** A click anywhere outside the open menu (and its button) closes it. */
-  onDocumentClick(event: MouseEvent): void {
-    const open = this.menu();
-    const target = event.target as Node;
-    if (!open || open.trigger.contains(target) || this.menuEl()?.nativeElement.contains(target)) {
-      return;
-    }
-    this.closeMenu();
-  }
-
-  private menuItems(): HTMLElement[] {
-    return [...(this.menuEl()?.nativeElement.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])];
+  protected onMenuSelect(id: string, row: T): void {
+    const action = this.config().actions?.find((a) => a.id === id);
+    if (action) this.runAction(action, row);
   }
 
   private sortValue(column: TableColumn<T>, row: T): string | number {
@@ -258,10 +177,6 @@ export class DataTable<T extends object> {
     return v === null || v === undefined ? '' : String(v);
   }
 }
-
-/** Size of the actions menu, used to position it (matches data-table.scss). */
-const MENU_WIDTH = 176;
-const ITEM_HEIGHT = 40;
 
 /** Numbers numerically; text case-insensitively with natural number order ("2" < "10"). */
 function compare(a: string | number, b: string | number): number {

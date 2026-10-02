@@ -1,0 +1,43 @@
+<button
+  #trigger
+  type="button"
+  class="btn btn--ghost btn--icon"
+  aria-haspopup="menu"
+  [attr.aria-expanded]="!!position()"
+  [attr.aria-label]="label()"
+  title="More actions"
+  [disabled]="disabled()"
+  (click)="toggle()"
+>
+  <app-icon name="more-vertical" />
+</button>
+
+@if (position(); as pos) {
+  <div
+    #menu
+    class="row-menu"
+    role="menu"
+    [attr.aria-label]="label()"
+    [style.top.px]="pos.top"
+    [style.left.px]="pos.left"
+    (keydown)="onKeydown($event)"
+  >
+    @for (a of actions(); track a.id) {
+      @if (a.link) {
+        <a role="menuitem" class="row-menu__item" [routerLink]="link(a.link)" (click)="close()">
+          <app-icon [name]="a.icon" [size]="16" /> {{ a.text }}
+        </a>
+      } @else {
+        <button
+          role="menuitem"
+          type="button"
+          class="row-menu__item"
+          [class.row-menu__item--danger]="a.danger"
+          (click)="choose(a)"
+        >
+          <app-icon [name]="a.icon" [size]="16" /> {{ a.text }}
+        </button>
+      }
+    }
+  </div>
+}

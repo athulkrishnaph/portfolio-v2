@@ -7,6 +7,7 @@ import { SkillsService, groupSkills } from '../../../core/services/skills.servic
 import { NotificationService } from '../../../core/ui/notification.service';
 import { AppValidators, applyServerErrors, revealErrors } from '../../../core/utils/forms';
 import { Loader } from '../../../core/utils/loader';
+import { ActionsMenu, MenuAction } from '../../../shared/components/actions-menu/actions-menu';
 import { Button } from '../../../shared/components/button/button';
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { ErrorState } from '../../../shared/components/error-state/error-state';
@@ -15,6 +16,7 @@ import { Icon } from '../../../shared/components/icon/icon';
 import { Modal } from '../../../shared/components/modal/modal';
 import { PageHeader } from '../../../shared/components/page-header/page-header';
 import { Spinner } from '../../../shared/components/spinner/spinner';
+import { TruncatePipe, isTruncated } from '../../../shared/pipes/truncate.pipe';
 import { DeleteAction } from '../shared/delete-action';
 
 /**
@@ -34,6 +36,8 @@ import { DeleteAction } from '../shared/delete-action';
     FormField,
     FormInput,
     Button,
+    ActionsMenu,
+    TruncatePipe,
   ],
   templateUrl: './skills-admin.html',
   styleUrl: './skills-admin.scss',
@@ -46,6 +50,13 @@ export class SkillsAdmin {
   protected readonly skills = new Loader(() => this.service.list());
   protected readonly groups = computed(() => groupSkills(this.skills.data() ?? []));
   protected readonly deleter = new DeleteAction('Skill', (id) => this.service.delete(id));
+
+  /** Longer skill names are shortened in the list (every name has a tooltip). */
+  protected readonly maxNameLength = 15;
+  protected readonly skillActions: MenuAction[] = [
+    { id: 'edit', icon: 'edit', text: 'Edit' },
+    { id: 'delete', icon: 'trash', text: 'Delete', danger: true },
+  ];
 
   protected readonly modalOpen = signal(false);
   protected readonly editing = signal<Skill | null>(null);
@@ -99,6 +110,16 @@ export class SkillsAdmin {
         this.formError.set(unmatched.join(' '));
       },
     });
+  }
+
+  /** A "⋮" menu choice on a skill. */
+  protected onAction(id: string, skill: Skill): void {
+    if (id === 'edit') this.openEdit(skill);
+    if (id === 'delete') this.remove(skill);
+  }
+
+  protected isLong(name: string): boolean {
+    return isTruncated(name, this.maxNameLength);
   }
 
   protected remove(skill: Skill): void {

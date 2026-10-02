@@ -1,3 +1,5 @@
+@use 'mixins' as *;
+
 .sections {
   display: grid;
   gap: var(--space-6);
@@ -19,4 +21,29 @@
 }
 .link-row .btn {
   margin-top: 28px;
+}
+.link-row__actions {
+  display: flex;
+}
+
+// Phones: platform + buttons on the first line, the URL full width below,
+// with a divider between links.
+@include down(sm) {
+  .link-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'platform actions'
+      'url url';
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+  }
+  .link-row__platform {
+    grid-area: platform;
+  }
+  .link-row__url {
+    grid-area: url;
+  }
+  .link-row__actions {
+    grid-area: actions;
+  }
 }

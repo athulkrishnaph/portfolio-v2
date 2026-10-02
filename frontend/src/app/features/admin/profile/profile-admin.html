@@ -56,13 +56,13 @@
 
         @for (link of links.controls; track link; let i = $index) {
           <div class="link-row" [formGroupName]="i">
-            <app-form-field label="Platform">
+            <app-form-field class="link-row__platform" label="Platform">
               <input appInput class="input" formControlName="platform" placeholder="GitHub" />
             </app-form-field>
-            <app-form-field label="URL">
+            <app-form-field class="link-row__url" label="URL">
               <input appInput class="input" type="url" formControlName="url" placeholder="https://github.com/…" />
             </app-form-field>
-            <span>
+            <span class="link-row__actions">
               <button type="button" class="btn btn--ghost btn--icon" [disabled]="i === 0" (click)="moveLinkUp(i)">
                 <app-icon name="chevron-up" [size]="16" [label]="'Move link ' + (i + 1) + ' up'" />
               </button>
@@ -80,6 +80,7 @@
       </fieldset>
 
       <div class="form-actions">
+        <button appButton type="button" [disabled]="form.pristine || saving()" (click)="cancel()">Cancel</button>
         <button appButton type="submit" variant="primary" [loading]="saving()">
           <app-icon name="check" [size]="16" /> Save profile
         </button>

@@ -1,8 +1,6 @@
 <label class="field__label" [attr.for]="inputId">
-  {{ label() }}
-  @if (isRequired()) {
-    <span class="field__required" aria-hidden="true">*</span>
-  }
+  <!-- The non-breaking space keeps the * on the same line as the last word. -->
+  {{ label() }}@if (isRequired()) {<span class="field__required" aria-hidden="true">&nbsp;*</span>}
 </label>
 <ng-content />
 @if (errorMessage(); as message) {
