@@ -1,4 +1,14 @@
-<span class="spinner__circle" aria-hidden="true"></span>
+@if (size() === 'lg') {
+  <!-- "</>" like the logo: the characters rise in a wave, then a blinking cursor. -->
+  <span class="spinner__code" aria-hidden="true">
+    <span class="spinner__char">&lt;</span>
+    <span class="spinner__char">/</span>
+    <span class="spinner__char">&gt;</span>
+    <span class="spinner__caret"></span>
+  </span>
+} @else {
+  <span class="spinner__circle" aria-hidden="true"></span>
+}
 @if (label()) {
   <span class="spinner__label">{{ label() }}</span>
 }

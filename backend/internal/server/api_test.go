@@ -64,7 +64,7 @@ func TestAPI(t *testing.T) {
 	}
 
 	// Create → read → validation → delete.
-	status, body = call("POST", "/api/skills", token, `{"name":"Go","category":"Backend","displayOrder":1}`)
+	status, body = call("POST", "/api/skills", token, `{"name":"Go","category":"Backend","displayOrder":1,"isFeatured":true}`)
 	if status != http.StatusCreated {
 		t.Fatalf("create: %d %v", status, body)
 	}
@@ -72,6 +72,8 @@ func TestAPI(t *testing.T) {
 
 	if status, body = call("GET", "/api/skills", "", ""); status != 200 || len(body["data"].([]any)) != 1 {
 		t.Errorf("public list: %d %v", status, body)
+	} else if featured := body["data"].([]any)[0].(map[string]any)["isFeatured"]; featured != true {
+		t.Errorf("isFeatured = %v, want true", featured)
 	}
 
 	status, body = call("POST", "/api/skills", token, `{"name":"go","category":"Backend"}`)

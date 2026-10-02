@@ -21,7 +21,7 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 
-const columns = `id, name, category, display_order, created_at, updated_at`
+const columns = `id, name, category, display_order, is_featured, created_at, updated_at`
 
 // List returns all skills sorted by category, then display order.
 // The frontend groups consecutive rows by category.
@@ -41,17 +41,17 @@ func (r *Repository) GetByID(ctx context.Context, id int64) (Skill, error) {
 
 func (r *Repository) Create(ctx context.Context, in Input) (Skill, error) {
 	return r.one(ctx, `
-		INSERT INTO skills (name, category, display_order) VALUES ($1, $2, $3)
+		INSERT INTO skills (name, category, display_order, is_featured) VALUES ($1, $2, $3, $4)
 		RETURNING `+columns,
-		in.Name, in.Category, in.DisplayOrder)
+		in.Name, in.Category, in.DisplayOrder, in.IsFeatured)
 }
 
 func (r *Repository) Update(ctx context.Context, id int64, in Input) (Skill, error) {
 	return r.one(ctx, `
-		UPDATE skills SET name = $2, category = $3, display_order = $4
+		UPDATE skills SET name = $2, category = $3, display_order = $4, is_featured = $5
 		WHERE id = $1
 		RETURNING `+columns,
-		id, in.Name, in.Category, in.DisplayOrder)
+		id, in.Name, in.Category, in.DisplayOrder, in.IsFeatured)
 }
 
 func (r *Repository) Delete(ctx context.Context, id int64) error {

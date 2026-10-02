@@ -99,8 +99,10 @@ export class Icon {
   readonly name = input.required<IconName>();
   readonly size = input(18);
   readonly label = input('');
+  /** Draws an outline icon filled instead, e.g. a solid star for "on". */
+  readonly solid = input(false);
 
-  protected readonly filled = computed(() => this.name() in FILLED_ICONS);
+  protected readonly filled = computed(() => this.solid() || this.name() in FILLED_ICONS);
   protected readonly path = computed(() => {
     const name = this.name();
     return name in FILLED_ICONS

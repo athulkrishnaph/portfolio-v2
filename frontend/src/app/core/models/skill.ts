@@ -3,6 +3,8 @@ export interface Skill {
   name: string;
   category: string;
   displayOrder: number;
+  /** Highlighted on the home page. */
+  isFeatured: boolean;
   createdAt: string;
   updatedAt: string;
 }

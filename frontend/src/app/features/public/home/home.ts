@@ -31,12 +31,22 @@ export class Home {
 
   protected readonly skillGroups = computed(() => groupSkills(this.skills.data() ?? []));
 
-  /** The first skill of the first few categories, for the decorative code card. */
-  protected readonly topSkills = computed(() =>
-    this.skillGroups()
+  /**
+   * Skills for the decorative code card: the featured ones (starred in the
+   * admin, in display order), or else the first skill of the first few categories.
+   */
+  protected readonly topSkills = computed(() => {
+    const featured = this.skillGroups()
+      .flatMap((g) => g.skills)
+      .filter((s) => s.isFeatured)
+      .map((s) => s.name);
+    if (featured.length) {
+      return featured;
+    }
+    return this.skillGroups()
       .slice(0, 3)
-      .map((g) => g.skills[0].name),
-  );
+      .map((g) => g.skills[0].name);
+  });
 
   /** First paragraph of the bio, for the hero. */
   protected readonly intro = computed(() => this.profile.data()?.bio.split(/\n\s*\n/)[0] ?? '');

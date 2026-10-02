@@ -67,19 +67,28 @@ export class SkillsAdmin {
     name: ['', [Validators.required, AppValidators.notBlank, Validators.maxLength(50)]],
     category: ['', [Validators.required, AppValidators.notBlank, Validators.maxLength(50)]],
     displayOrder: [0, [Validators.min(0), Validators.max(1_000_000)]],
+    isFeatured: [false],
   });
+
+  /** id of the skill whose star is being saved. */
+  protected readonly featuringId = signal<number | null>(null);
 
   protected openCreate(): void {
     this.editing.set(null);
     // Keep the last category: skills are usually added in batches per category.
-    this.form.reset({ name: '', category: this.form.controls.category.value, displayOrder: 0 });
+    this.form.reset({ name: '', category: this.form.controls.category.value, displayOrder: 0, isFeatured: false });
     this.formError.set('');
     this.modalOpen.set(true);
   }
 
   protected openEdit(skill: Skill): void {
     this.editing.set(skill);
-    this.form.reset({ name: skill.name, category: skill.category, displayOrder: skill.displayOrder });
+    this.form.reset({
+      name: skill.name,
+      category: skill.category,
+      displayOrder: skill.displayOrder,
+      isFeatured: skill.isFeatured,
+    });
     this.formError.set('');
     this.modalOpen.set(true);
   }
@@ -108,6 +117,25 @@ export class SkillsAdmin {
         const error = ApiError.from(err);
         const unmatched = error.isValidation ? applyServerErrors(this.form, error) : [error.message];
         this.formError.set(unmatched.join(' '));
+      },
+    });
+  }
+
+  /** The star: sends the whole skill back with isFeatured flipped (PUT replaces all fields). */
+  protected toggleFeatured(skill: Skill): void {
+    const { id: _id, createdAt: _created, updatedAt: _updated, ...input } = skill;
+    this.featuringId.set(skill.id);
+    this.service.update(skill.id, { ...input, isFeatured: !skill.isFeatured }).subscribe({
+      next: (updated) => {
+        this.featuringId.set(null);
+        this.notifications.success(
+          updated.isFeatured ? `"${updated.name}" featured on the home page` : `"${updated.name}" removed from featured`,
+        );
+        this.skills.refresh();
+      },
+      error: (err: unknown) => {
+        this.featuringId.set(null);
+        this.notifications.error(ApiError.from(err).message);
       },
     });
   }

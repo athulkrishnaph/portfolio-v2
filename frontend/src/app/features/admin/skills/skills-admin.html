@@ -26,12 +26,26 @@
                 }
                 <span class="text-muted order">#{{ skill.displayOrder }}</span>
               </span>
-              <app-actions-menu
-                [actions]="skillActions"
-                [label]="'More actions for ' + skill.name"
-                [disabled]="deleter.busyId() === skill.id"
-                (select)="onAction($event, skill)"
-              />
+              <span class="group__actions">
+                <button
+                  type="button"
+                  class="btn btn--ghost btn--icon star"
+                  [class.is-on]="skill.isFeatured"
+                  [attr.aria-pressed]="skill.isFeatured"
+                  [attr.aria-label]="(skill.isFeatured ? 'Unfeature ' : 'Feature ') + skill.name"
+                  [title]="skill.isFeatured ? 'Featured on the home page' : 'Feature on the home page'"
+                  [disabled]="featuringId() === skill.id"
+                  (click)="toggleFeatured(skill)"
+                >
+                  <app-icon name="star" [size]="16" [solid]="skill.isFeatured" />
+                </button>
+                <app-actions-menu
+                  [actions]="skillActions"
+                  [label]="'More actions for ' + skill.name"
+                  [disabled]="deleter.busyId() === skill.id"
+                  (select)="onAction($event, skill)"
+                />
+              </span>
             </li>
           }
         </ul>
@@ -63,6 +77,10 @@
     <app-form-field label="Display order" hint="Order within the category; lower comes first.">
       <input appInput class="input" type="number" min="0" formControlName="displayOrder" />
     </app-form-field>
+    <label class="checkbox">
+      <input type="checkbox" formControlName="isFeatured" />
+      Featured on the home page
+    </label>
     <div class="form-actions">
       <button appButton type="button" variant="ghost" (click)="modalOpen.set(false)">Cancel</button>
       <button appButton type="submit" variant="primary" [loading]="saving()">Save</button>

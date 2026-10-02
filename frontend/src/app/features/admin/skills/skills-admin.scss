@@ -38,3 +38,11 @@
 .order {
   font-size: var(--text-xs);
 }
+.group__actions {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+// Featured: a filled star in the warning (gold) colour, like projects.
+.star.is-on {
+  color: var(--color-warning);
+}
