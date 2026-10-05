@@ -4,11 +4,27 @@
   } @else if (profile.error(); as error) {
     <app-error-state [error]="error" (retry)="profile.reload()" />
   } @else if (profile.data(); as p) {
-    <div class="about">
-      <aside class="about__aside">
-        @if (p.imageUrl) {
-          <img class="about__photo" [src]="p.imageUrl" [alt]="'Photo of ' + p.fullName" />
+    <!-- Phones: photo, "about me", quick facts (this HTML order).
+         Wide screens: photo and quick facts in the left column, "about me" on the right. -->
+    <div class="about" [class.about--photo]="!!p.imageUrl">
+      @if (p.imageUrl) {
+        <img class="about__photo" [src]="p.imageUrl" [alt]="'Photo of ' + p.fullName" />
+      }
+
+      <div class="about__main">
+        <span class="eyebrow">// about me</span>
+        <h1>{{ p.fullName }}</h1>
+        @if (p.headline) {
+          <p class="about__headline">{{ p.headline }}</p>
         }
+        <p class="about__bio prose">{{ p.bio }}</p>
+        <div class="about__actions">
+          <a class="btn btn--primary" routerLink="/experience">My experience</a>
+          <a class="btn btn--secondary" routerLink="/projects">See projects</a>
+        </div>
+      </div>
+
+      <aside class="about__aside">
         <div class="card card--padded about__facts">
           <h2 class="about__facts-title">Quick facts</h2>
           <ul>
@@ -30,19 +46,6 @@
           }
         </div>
       </aside>
-
-      <div>
-        <span class="eyebrow">// about me</span>
-        <h1>{{ p.fullName }}</h1>
-        @if (p.headline) {
-          <p class="about__headline">{{ p.headline }}</p>
-        }
-        <p class="about__bio prose">{{ p.bio }}</p>
-        <div class="about__actions">
-          <a class="btn btn--primary" routerLink="/experience">My experience</a>
-          <a class="btn btn--secondary" routerLink="/projects">See projects</a>
-        </div>
-      </div>
     </div>
   } @else {
     <app-empty-state icon="user" title="Profile coming soon" message="This section hasn't been filled in yet." />

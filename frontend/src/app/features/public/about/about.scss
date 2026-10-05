@@ -2,10 +2,36 @@
   display: grid;
   gap: var(--space-7);
 }
+// Wide screens: photo above quick facts on the left, "about me" on the right
+// (spanning both rows; the 1fr row absorbs its extra height, so the photo
+// and the facts stay together).
 @media (min-width: 1024px) {
   .about {
     grid-template-columns: 320px 1fr;
     align-items: start;
+    row-gap: var(--space-5);
+  }
+  .about__main {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .about__aside {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .about--photo {
+    grid-template-rows: auto 1fr;
+
+    .about__photo {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .about__aside {
+      grid-row: 2;
+    }
+    .about__main {
+      grid-row: 1 / span 2;
+    }
   }
 }
 .about__aside {
