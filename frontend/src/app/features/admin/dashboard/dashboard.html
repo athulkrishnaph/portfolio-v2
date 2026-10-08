@@ -1,15 +1,15 @@
-<app-page-header title="Dashboard" [subtitle]="'Signed in as ' + (auth.user()?.email ?? '')">
+<app-page-header title="Dashboard" [subtitle]="'Signed in as ' + store.userEmail()">
   <a class="btn btn--secondary" routerLink="/" target="_blank" rel="noopener">
     <app-icon name="external" [size]="16" /> View site
   </a>
 </app-page-header>
 
-@if (content.loading()) {
+@if (store.content.loading()) {
   <app-spinner label="Loading overview…" />
-} @else if (content.error(); as error) {
-  <app-error-state [error]="error" (retry)="content.reload()" />
+} @else if (store.content.error(); as error) {
+  <app-error-state [error]="error" (retry)="store.content.reload()" />
 } @else {
-  @if (!content.data()?.profile) {
+  @if (!store.hasProfile()) {
     <div class="alert alert--info setup">
       <app-icon name="info" />
       <span>Your profile is not set up yet. <a routerLink="/admin/profile">Add your name and bio</a> to complete the home page.</span>
@@ -17,7 +17,7 @@
   }
 
   <div class="stats">
-    @for (stat of stats(); track stat.label) {
+    @for (stat of store.stats(); track stat.label) {
       <a class="card card--padded card--interactive stat" [routerLink]="stat.link">
         <span class="stat__icon"><app-icon [name]="stat.icon" [size]="22" /></span>
         <span class="stat__count">{{ stat.count }}</span>

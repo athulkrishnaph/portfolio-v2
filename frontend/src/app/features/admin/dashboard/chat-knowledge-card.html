@@ -2,11 +2,11 @@
   <span class="knowledge__icon" aria-hidden="true"><app-icon name="sparkles" [size]="22" /></span>
   <div class="knowledge__body">
     <h2 id="knowledge-title" class="knowledge__title">AI assistant</h2>
-    @if (info.loading()) {
+    @if (store.knowledge.loading()) {
       <p class="text-muted">Loading…</p>
-    } @else if (info.error(); as error) {
+    } @else if (store.knowledge.error(); as error) {
       <p class="text-muted">{{ error.message }}</p>
-    } @else if (info.data(); as k) {
+    } @else if (store.knowledge.data(); as k) {
       @if (k.enabled) {
         <p class="text-muted">
           Knows <strong>{{ k.chunks }}</strong> pieces of your portfolio
@@ -24,8 +24,8 @@
       }
     }
   </div>
-  @if (info.data()?.enabled) {
-    <button appButton type="button" [loading]="rebuilding()" (click)="rebuild()">
+  @if (store.knowledge.data()?.enabled) {
+    <button appButton type="button" [loading]="store.rebuilding()" (click)="store.rebuildKnowledge()">
       <app-icon name="refresh" [size]="16" /> Rebuild knowledge
     </button>
   }

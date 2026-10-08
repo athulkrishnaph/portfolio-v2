@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- The site logo "</>" (drawn as strokes, not text, so no font is needed). -->
+  <rect width="64" height="64" rx="14" fill="#4f46e5"/>
+  <g fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="21,20 9,32 21,44"/>
+    <line x1="37" y1="15" x2="27" y2="49"/>
+    <polyline points="43,20 55,32 43,44"/>
+  </g>
+</svg>

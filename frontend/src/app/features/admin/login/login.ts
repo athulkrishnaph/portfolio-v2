@@ -1,19 +1,21 @@
 import { Component, ElementRef, effect, inject, input, signal, viewChild } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
-import { ApiError } from '../../../core/api/api-error';
-import { AuthService } from '../../../core/auth/auth.service';
 import { loadGoogleIdentity } from '../../../core/auth/google-identity';
-import { revealErrors } from '../../../core/utils/forms';
 import { Button } from '../../../shared/components/button/button';
 import { FormField, FormInput } from '../../../shared/components/form-field/form-field';
 import { Icon } from '../../../shared/components/icon/icon';
+import { LoginStore } from './login.store';
 
-/** /admin/login. Redirects to ?returnUrl (or the dashboard) after signing in. */
+/**
+ * /admin/login. Sign-in logic lives in LoginStore; this class handles the
+ * view: route params, the show-password toggle and placing Google's button.
+ */
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, RouterLink, FormField, FormInput, Button, Icon],
+  providers: [LoginStore],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -22,36 +24,16 @@ export class Login {
   readonly returnUrl = input<string>();
   readonly reason = input<string>();
 
-  private readonly auth = inject(AuthService);
-  private readonly router = inject(Router);
-
-  protected readonly form = inject(NonNullableFormBuilder).group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
-  });
-
-  protected readonly submitting = signal(false);
-  protected readonly error = signal('');
+  protected readonly store = inject(LoginStore);
   protected readonly showPassword = signal(false);
-
-  /** Set when the server has Google sign-in enabled; shows the Google button. */
-  protected readonly googleClientId = signal('');
-  protected readonly googleBusy = signal(false);
   /** True once Google's (invisible) button is in place and clickable. */
   protected readonly googleReady = signal(false);
   private readonly googleButton = viewChild<ElementRef<HTMLElement>>('googleButton');
 
   constructor() {
-    this.auth.options().subscribe({
-      next: (o) => this.googleClientId.set(o.googleClientId),
-      error: () => {
-        /* options unavailable: the password login still works */
-      },
-    });
-
     // Render Google's button once its container exists.
     effect(() => {
-      const clientId = this.googleClientId();
+      const clientId = this.store.googleClientId();
       const host = this.googleButton()?.nativeElement;
       if (!clientId || !host) {
         return;
@@ -60,7 +42,7 @@ export class Login {
         .then((google) => {
           google.initialize({
             client_id: clientId,
-            callback: ({ credential }) => this.signInWithGoogle(credential),
+            callback: ({ credential }) => this.store.signInWithGoogle(credential, this.returnUrl()),
             ux_mode: 'popup',
             auto_select: false,
             cancel_on_tap_outside: true,
@@ -78,47 +60,7 @@ export class Login {
           });
           this.googleReady.set(true);
         })
-        .catch(() => this.googleClientId.set(''));
+        .catch(() => this.store.disableGoogle());
     });
-  }
-
-  private signInWithGoogle(credential: string): void {
-    this.googleBusy.set(true);
-    this.error.set('');
-    this.auth.loginWithGoogle(credential).subscribe({
-      next: () => {
-        this.googleBusy.set(false);
-        void this.router.navigateByUrl(this.safeReturnUrl());
-      },
-      error: (err: unknown) => {
-        this.googleBusy.set(false);
-        this.error.set(ApiError.from(err).message);
-      },
-    });
-  }
-
-  protected submit(): void {
-    if (this.form.invalid) {
-      revealErrors(this.form);
-      return;
-    }
-    this.submitting.set(true);
-    this.error.set('');
-    this.auth.login(this.form.getRawValue()).subscribe({
-      next: () => {
-        this.submitting.set(false);
-        void this.router.navigateByUrl(this.safeReturnUrl());
-      },
-      error: (err: unknown) => {
-        this.submitting.set(false);
-        this.error.set(ApiError.from(err).message);
-      },
-    });
-  }
-
-  /** Only allow redirects inside the admin area (no open redirect to other sites). */
-  private safeReturnUrl(): string {
-    const url = this.returnUrl();
-    return url && url.startsWith('/admin') && !url.startsWith('/admin/login') ? url : '/admin/dashboard';
   }
 }

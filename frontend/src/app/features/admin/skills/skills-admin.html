@@ -1,16 +1,16 @@
-<app-page-header title="Skills" [subtitle]="(skills.data()?.length ?? 0) + ' skills'">
-  <button appButton type="button" variant="primary" (click)="openCreate()">
+<app-page-header title="Skills" [subtitle]="store.count() + ' skills'">
+  <button appButton type="button" variant="primary" (click)="store.openCreate()">
     <app-icon name="plus" [size]="16" /> New skill
   </button>
 </app-page-header>
 
-@if (skills.loading()) {
+@if (store.skills.loading()) {
   <app-spinner label="Loading skills…" />
-} @else if (skills.error(); as error) {
-  <app-error-state [error]="error" (retry)="skills.reload()" />
-} @else if (groups().length) {
+} @else if (store.skills.error(); as error) {
+  <app-error-state [error]="error" (retry)="store.skills.reload()" />
+} @else if (store.groups().length) {
   <div class="groups">
-    @for (group of groups(); track group.category) {
+    @for (group of store.groups(); track group.category) {
       <section class="card group">
         <h2 class="group__title">{{ group.category }} <span class="text-muted">({{ group.skills.length }})</span></h2>
         <ul class="group__list">
@@ -34,15 +34,15 @@
                   [attr.aria-pressed]="skill.isFeatured"
                   [attr.aria-label]="(skill.isFeatured ? 'Unfeature ' : 'Feature ') + skill.name"
                   [title]="skill.isFeatured ? 'Featured on the home page' : 'Feature on the home page'"
-                  [disabled]="featuringId() === skill.id"
-                  (click)="toggleFeatured(skill)"
+                  [disabled]="store.featuringId() === skill.id"
+                  (click)="store.toggleFeatured(skill)"
                 >
                   <app-icon name="star" [size]="16" [solid]="skill.isFeatured" />
                 </button>
                 <app-actions-menu
                   [actions]="skillActions"
                   [label]="'More actions for ' + skill.name"
-                  [disabled]="deleter.busyId() === skill.id"
+                  [disabled]="store.deleter.busyId() === skill.id"
                   (select)="onAction($event, skill)"
                 />
               </span>
@@ -54,14 +54,14 @@
   </div>
 } @else {
   <app-empty-state icon="zap" title="No skills yet">
-    <button appButton type="button" variant="primary" (click)="openCreate()">New skill</button>
+    <button appButton type="button" variant="primary" (click)="store.openCreate()">New skill</button>
   </app-empty-state>
 }
 
-<app-modal [open]="modalOpen()" [title]="editing() ? 'Edit skill' : 'New skill'" (closed)="modalOpen.set(false)">
-  <form class="form" [formGroup]="form" (ngSubmit)="save()" novalidate>
-    @if (formError()) {
-      <div class="alert alert--danger" role="alert">{{ formError() }}</div>
+<app-modal [open]="store.modalOpen()" [title]="store.editing() ? 'Edit skill' : 'New skill'" (closed)="store.closeModal()">
+  <form class="form" [formGroup]="store.form" (ngSubmit)="store.save()" novalidate>
+    @if (store.formError()) {
+      <div class="alert alert--danger" role="alert">{{ store.formError() }}</div>
     }
     <app-form-field label="Name">
       <input appInput class="input" formControlName="name" placeholder="e.g. PostgreSQL" />
@@ -69,7 +69,7 @@
     <app-form-field label="Category" hint="Pick an existing one or type a new category.">
       <input appInput class="input" formControlName="category" list="skill-categories" />
       <datalist id="skill-categories">
-        @for (group of groups(); track group.category) {
+        @for (group of store.groups(); track group.category) {
           <option [value]="group.category"></option>
         }
       </datalist>
@@ -82,8 +82,8 @@
       Featured on the home page
     </label>
     <div class="form-actions">
-      <button appButton type="button" variant="ghost" (click)="modalOpen.set(false)">Cancel</button>
-      <button appButton type="submit" variant="primary" [loading]="saving()">Save</button>
+      <button appButton type="button" variant="ghost" (click)="store.closeModal()">Cancel</button>
+      <button appButton type="submit" variant="primary" [loading]="store.saving()">Save</button>
     </div>
   </form>
 </app-modal>

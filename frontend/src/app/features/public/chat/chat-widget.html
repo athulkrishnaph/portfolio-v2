@@ -1,15 +1,15 @@
-@if (enabled()) {
+@if (store.enabled()) {
   <button
     #launcher
     type="button"
     class="chat-launcher"
     [class.chat-launcher--open]="open()"
-    [class.chat-launcher--dragging]="dragging()"
-    [style]="launcherStyle()"
-    (pointerdown)="onDragStart($event)"
-    (pointermove)="onDragMove($event)"
-    (pointerup)="onDragEnd()"
-    (pointercancel)="onDragEnd()"
+    [class.chat-launcher--dragging]="position.dragging()"
+    [style]="position.launcherStyle()"
+    (pointerdown)="position.dragStart($event)"
+    (pointermove)="position.dragMove($event)"
+    (pointerup)="position.dragEnd()"
+    (pointercancel)="position.dragEnd()"
     aria-controls="chat-panel"
     [attr.aria-expanded]="open()"
     [attr.aria-label]="open() ? 'Close the AI assistant' : 'Ask the AI assistant about this portfolio'"
@@ -22,7 +22,7 @@
     <section
       id="chat-panel"
       class="chat"
-      [style]="panelStyle()"
+      [style]="position.panelStyle()"
       role="dialog"
       aria-labelledby="chat-title"
       aria-describedby="chat-subtitle"
@@ -31,10 +31,10 @@
       <header class="chat__header">
         <span class="chat__avatar" aria-hidden="true"><app-icon name="sparkles" /></span>
         <div class="chat__heading">
-          <h2 id="chat-title">Ask about {{ ownerName() }}</h2>
+          <h2 id="chat-title">Ask about {{ store.ownerName() }}</h2>
           <p id="chat-subtitle">AI assistant · answers from this portfolio</p>
         </div>
-        @if (messages().length) {
+        @if (store.messages().length) {
           <button type="button" class="btn btn--ghost btn--icon" title="Clear conversation" (click)="clear()">
             <app-icon name="trash" [size]="16" label="Clear conversation" />
           </button>
@@ -49,18 +49,18 @@
         class="chat__log"
         role="log"
         aria-live="polite"
-        [attr.aria-busy]="busy()"
+        [attr.aria-busy]="store.busy()"
         (click)="onLogClick($event)"
       >
-        @if (!messages().length) {
+        @if (!store.messages().length) {
           <div class="chat__intro">
             <p>
-              Hi! I can answer questions about {{ ownerName() }}'s skills, projects, experience and
+              Hi! I can answer questions about {{ store.ownerName() }}'s skills, projects, experience and
               education, based only on this portfolio.
             </p>
             <p class="chat__try">Try asking:</p>
             <ul class="chat__suggestions">
-              @for (q of suggestions(); track q) {
+              @for (q of store.suggestions(); track q) {
                 <li>
                   <button type="button" class="chat__suggestion" (click)="send(q)">{{ q }}</button>
                 </li>
@@ -69,7 +69,7 @@
           </div>
         }
 
-        @for (m of messages(); track m.id) {
+        @for (m of store.messages(); track m.id) {
           @if (m.role === 'user') {
             <div class="msg msg--user">
               <span class="visually-hidden">You:</span>
@@ -93,7 +93,7 @@
                     <app-icon name="info" [size]="16" />
                     <span>{{ m.error }}</span>
                   </p>
-                  <button type="button" class="btn btn--secondary btn--sm" (click)="retry(m)">
+                  <button type="button" class="btn btn--secondary btn--sm" (click)="store.retry(m)">
                     <app-icon name="refresh" [size]="14" /> Try again
                   </button>
                 }
@@ -134,15 +134,15 @@
           class="chat__input"
           rows="1"
           placeholder="Ask a question…"
-          [attr.maxlength]="maxChars()"
-          [value]="draft()"
+          [attr.maxlength]="store.maxChars()"
+          [value]="store.draft()"
           (input)="onInput($event)"
           (keydown)="onKeydown($event)"
         ></textarea>
         <button
           type="submit"
           class="btn btn--primary btn--icon"
-          [disabled]="busy() || !draft().trim()"
+          [disabled]="store.busy() || !store.draft().trim()"
           aria-label="Send question"
         >
           <app-icon name="send" [size]="18" />
@@ -150,8 +150,8 @@
       </form>
       <p class="chat__note">
         <span>AI answers can be imperfect · Enter to send, Shift+Enter for a new line</span>
-        @if (draft().length > maxChars() * 0.8) {
-          <span class="chat__count">{{ draft().length }}/{{ maxChars() }}</span>
+        @if (store.draft().length > store.maxChars() * 0.8) {
+          <span class="chat__count">{{ store.draft().length }}/{{ store.maxChars() }}</span>
         }
       </p>
     </section>

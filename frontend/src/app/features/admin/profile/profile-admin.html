@@ -1,18 +1,18 @@
 <app-page-header title="Profile" subtitle="Your name, bio, photo and links, shown across the public site." />
 
-@if (loading()) {
+@if (store.loading()) {
   <app-spinner label="Loading profile…" />
-} @else if (loadError(); as error) {
-  <app-error-state [error]="error" (retry)="load()" />
+} @else if (store.loadError(); as error) {
+  <app-error-state [error]="error" (retry)="store.load()" />
 } @else {
   <div class="sections">
     <!-- ---- Profile ------------------------------------------------------------ -->
-    <form class="card card--padded form" [formGroup]="form" (ngSubmit)="save()" novalidate>
-      @if (formErrors().length) {
+    <form class="card card--padded form" [formGroup]="store.form" (ngSubmit)="store.save()" novalidate>
+      @if (store.formErrors().length) {
         <div class="alert alert--danger" role="alert">
           <app-icon name="info" />
           <div>
-            @for (message of formErrors(); track message) {
+            @for (message of store.formErrors(); track message) {
               <div>{{ message }}</div>
             }
           </div>
@@ -41,11 +41,11 @@
         </app-form-field>
       </div>
 
-      <app-form-field label="Profile photo" [control]="form.controls.imageUrl">
+      <app-form-field label="Profile photo" [control]="store.form.controls.imageUrl">
         <app-image-upload formControlName="imageUrl" />
       </app-form-field>
 
-      <app-form-field label="Resume (PDF)" [control]="form.controls.resumeUrl">
+      <app-form-field label="Resume (PDF)" [control]="store.form.controls.resumeUrl">
         <app-image-upload formControlName="resumeUrl" kind="document" />
       </app-form-field>
 
@@ -54,7 +54,7 @@
         <legend class="section-title">Social links</legend>
         <p class="text-muted">GitHub, LinkedIn, X and others. The order here is the display order.</p>
 
-        @for (link of links.controls; track link; let i = $index) {
+        @for (link of store.links.controls; track link; let i = $index) {
           <div class="link-row" [formGroupName]="i">
             <app-form-field class="link-row__platform" label="Platform">
               <input appInput class="input" formControlName="platform" placeholder="GitHub" />
@@ -63,32 +63,32 @@
               <input appInput class="input" type="url" formControlName="url" placeholder="https://github.com/…" />
             </app-form-field>
             <span class="link-row__actions">
-              <button type="button" class="btn btn--ghost btn--icon" [disabled]="i === 0" (click)="moveLinkUp(i)">
+              <button type="button" class="btn btn--ghost btn--icon" [disabled]="i === 0" (click)="store.moveLinkUp(i)">
                 <app-icon name="chevron-up" [size]="16" [label]="'Move link ' + (i + 1) + ' up'" />
               </button>
-              <button type="button" class="btn btn--ghost btn--icon" (click)="removeLink(i)">
+              <button type="button" class="btn btn--ghost btn--icon" (click)="store.removeLink(i)">
                 <app-icon name="trash" [size]="16" [label]="'Remove link ' + (i + 1)" />
               </button>
             </span>
           </div>
         }
         <div>
-          <button appButton type="button" size="sm" (click)="addLink(); form.markAsDirty()">
+          <button appButton type="button" size="sm" (click)="store.addLink()">
             <app-icon name="plus" [size]="16" /> Add link
           </button>
         </div>
       </fieldset>
 
       <div class="form-actions">
-        <button appButton type="button" [disabled]="form.pristine || saving()" (click)="cancel()">Cancel</button>
-        <button appButton type="submit" variant="primary" [loading]="saving()">
+        <button appButton type="button" [disabled]="store.form.pristine || store.saving()" (click)="store.cancel()">Cancel</button>
+        <button appButton type="submit" variant="primary" [loading]="store.saving()">
           <app-icon name="check" [size]="16" /> Save profile
         </button>
       </div>
     </form>
 
     <!-- ---- Password ------------------------------------------------------------- -->
-    <form class="card card--padded form" [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate>
+    <form class="card card--padded form" [formGroup]="store.passwordForm" (ngSubmit)="store.changePassword()" novalidate>
       <div>
         <h2 class="section-title">Change password</h2>
         <p class="text-muted">At least 10 characters. You stay signed in on this device.</p>
@@ -105,7 +105,7 @@
         </app-form-field>
       </div>
       <div class="form-actions">
-        <button appButton type="submit" [loading]="savingPassword()">Change password</button>
+        <button appButton type="submit" [loading]="store.savingPassword()">Change password</button>
       </div>
     </form>
   </div>
