@@ -1,5 +1,5 @@
 <section class="container section">
-  <header class="page-intro">
+  <header class="page-intro" appIntro="stagger">
     <span class="eyebrow">// contact</span>
     <h1>Let's talk</h1>
     <p>
@@ -13,7 +13,7 @@
   } @else if (profile.error(); as error) {
     <app-error-state [error]="error" (retry)="profile.reload()" />
   } @else if (profile.data(); as p) {
-    <div class="grid grid--2">
+    <div class="grid grid--2" appIntro="stagger" [introDelay]="0.2">
       @if (p.email) {
         <div class="card card--padded contact">
           <span class="contact__icon"><app-icon name="mail" [size]="22" /></span>

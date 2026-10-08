@@ -8,6 +8,7 @@ import { ErrorState } from '../../../shared/components/error-state/error-state';
 import { Icon } from '../../../shared/components/icon/icon';
 import { SocialLinks } from '../../../shared/components/social-links/social-links';
 import { Spinner } from '../../../shared/components/spinner/spinner';
+import { IntroDirective } from '../../../shared/directives/intro.directive';
 
 /**
  * Contact details from the profile. Email opens the visitor's mail app
@@ -15,7 +16,7 @@ import { Spinner } from '../../../shared/components/spinner/spinner';
  */
 @Component({
   selector: 'app-contact',
-  imports: [Icon, SocialLinks, Spinner, ErrorState, EmptyState],
+  imports: [Icon, SocialLinks, Spinner, ErrorState, EmptyState, IntroDirective],
   templateUrl: './contact.html',
   styleUrl: './contact.scss',
 })

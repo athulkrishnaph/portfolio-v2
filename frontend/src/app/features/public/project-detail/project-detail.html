@@ -15,7 +15,7 @@
     }
   } @else if (project.data(); as p) {
     <article class="detail">
-      <header class="detail__header">
+      <header class="detail__header" appIntro="stagger">
         @if (p.isFeatured) {
           <span class="tag tag--primary">Featured project</span>
         }
@@ -41,7 +41,7 @@
         <img class="detail__image" [src]="p.imageUrl" [alt]="'Screenshot of ' + p.title" />
       }
 
-      <div class="detail__body">
+      <div class="detail__body" appIntro [introDelay]="0.3">
         <div class="prose detail__description">{{ p.description || p.summary }}</div>
         @if (p.technologies.length) {
           <aside class="card card--padded">

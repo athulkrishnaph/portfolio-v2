@@ -1,5 +1,5 @@
 <section class="container section">
-  <header class="page-intro">
+  <header class="page-intro" appIntro="stagger">
     <span class="eyebrow">// certificates</span>
     <h1>Certifications</h1>
     <p>Credentials that back up the skills I use every day.</p>
@@ -10,7 +10,7 @@
   } @else if (certificates.error(); as error) {
     <app-error-state [error]="error" (retry)="certificates.reload()" />
   } @else if (certificates.data()?.length) {
-    <div class="grid grid--3">
+    <div class="grid grid--3" appIntro="stagger" [introDelay]="0.2">
       @for (certificate of certificates.data(); track certificate.id) {
         <app-certificate-card [certificate]="certificate" />
       }

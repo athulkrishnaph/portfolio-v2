@@ -11,11 +11,12 @@ import { Icon } from '../../../shared/components/icon/icon';
 import { ProjectCard } from '../../../shared/components/project-card/project-card';
 import { SocialLinks } from '../../../shared/components/social-links/social-links';
 import { Spinner } from '../../../shared/components/spinner/spinner';
+import { IntroDirective } from '../../../shared/directives/intro.directive';
 
 /** Landing page: hero from the profile, featured projects and a skills overview. */
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, Icon, ProjectCard, SocialLinks, Spinner, ErrorState],
+  imports: [RouterLink, Icon, ProjectCard, SocialLinks, Spinner, ErrorState, IntroDirective],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })

@@ -6,11 +6,12 @@ import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { ErrorState } from '../../../shared/components/error-state/error-state';
 import { Spinner } from '../../../shared/components/spinner/spinner';
 import { Timeline, TimelineItem } from '../../../shared/components/timeline/timeline';
+import { IntroDirective } from '../../../shared/directives/intro.directive';
 
 /** Work history as a timeline. */
 @Component({
   selector: 'app-experience',
-  imports: [Timeline, Spinner, ErrorState, EmptyState],
+  imports: [Timeline, Spinner, ErrorState, EmptyState, IntroDirective],
   templateUrl: './experience.html',
 })
 export class ExperiencePage {

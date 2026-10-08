@@ -8,7 +8,7 @@
     } @else {
       @let p = profile.data();
       <div class="hero__grid">
-        <div class="hero__text">
+        <div class="hero__text" appIntro="stagger">
           <span class="eyebrow">// hello, world — I'm</span>
           <h1 class="hero__name">{{ p?.fullName || 'Welcome' }}</h1>
           @if (p?.headline) {
@@ -37,7 +37,7 @@
           }
         </div>
 
-        <div class="hero__visual" aria-hidden="true">
+        <div class="hero__visual" aria-hidden="true" appIntro="zoom" [introDelay]="0.3">
           @if (p?.imageUrl) {
             <img class="hero__photo" [src]="p?.imageUrl" alt="" />
           } @else {
@@ -60,7 +60,7 @@
 <!-- ---- Featured projects ------------------------------------------------------ -->
 <section class="section">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head" appIntro>
       <div>
         <span class="eyebrow">// selected work</span>
         <h2>Featured projects</h2>
@@ -73,7 +73,7 @@
     } @else if (featured.error(); as error) {
       <app-error-state [error]="error" (retry)="featured.reload()" />
     } @else if (featured.data()?.length) {
-      <div class="grid grid--3">
+      <div class="grid grid--3" appIntro="stagger" [introDelay]="0.1">
         @for (project of featured.data(); track project.id) {
           <app-project-card [project]="project" />
         }
@@ -88,14 +88,14 @@
 @if (skillGroups().length) {
   <section class="section section--alt">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" appIntro>
         <div>
           <span class="eyebrow">// toolbox</span>
           <h2>Skills &amp; technologies</h2>
         </div>
         <a class="link-arrow" routerLink="/skills">All skills <app-icon name="arrow-right" [size]="16" /></a>
       </div>
-      <div class="grid grid--3">
+      <div class="grid grid--3" appIntro="stagger" [introDelay]="0.1">
         @for (group of skillGroups(); track group.category) {
           <div class="card card--padded">
             <h3 class="skills__category">{{ group.category }}</h3>
@@ -114,7 +114,7 @@
 <!-- ---- Call to action ---------------------------------------------------------- -->
 <section class="section">
   <div class="container">
-    <div class="cta card">
+    <div class="cta card" appIntro>
       <div>
         <h2 class="cta__title">Let's build something together</h2>
         <p class="text-muted">Have a project in mind or just want to say hi? My inbox is always open.</p>

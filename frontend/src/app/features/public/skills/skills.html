@@ -1,5 +1,5 @@
 <section class="container section">
-  <header class="page-intro">
+  <header class="page-intro" appIntro="stagger">
     <span class="eyebrow">// skills</span>
     <h1>Skills &amp; technologies</h1>
     <p>The languages, frameworks and tools I use to design, build and ship software.</p>
@@ -10,7 +10,7 @@
   } @else if (skills.error(); as error) {
     <app-error-state [error]="error" (retry)="skills.reload()" />
   } @else if (groups().length) {
-    <div class="grid grid--3">
+    <div class="grid grid--3" appIntro="stagger" [introDelay]="0.2">
       @for (group of groups(); track group.category) {
         <article class="card card--padded">
           <h2 class="group__title">

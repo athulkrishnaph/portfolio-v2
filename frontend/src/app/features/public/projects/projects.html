@@ -1,5 +1,5 @@
 <section class="container section">
-  <header class="page-intro">
+  <header class="page-intro" appIntro="stagger">
     <span class="eyebrow">// projects</span>
     <h1>Things I've built</h1>
     <p>A selection of projects — from APIs and tools to full-stack applications.</p>
@@ -11,7 +11,7 @@
     <app-error-state [error]="error" (retry)="projects.reload()" />
   } @else if (projects.data()?.length) {
     @if (technologies().length > 1) {
-      <div class="filters" role="group" aria-label="Filter by technology">
+      <div class="filters" appIntro [introDelay]="0.15" role="group" aria-label="Filter by technology">
         <button
           type="button"
           class="filter"
@@ -36,7 +36,7 @@
     }
 
     <p class="visually-hidden" aria-live="polite">{{ filtered().length }} projects shown</p>
-    <div class="grid grid--3">
+    <div class="grid grid--3" appIntro="stagger" [introDelay]="0.2">
       @for (project of pageItems(); track project.id) {
         <app-project-card [project]="project" />
       }

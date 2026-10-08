@@ -6,11 +6,12 @@ import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { ErrorState } from '../../../shared/components/error-state/error-state';
 import { Icon } from '../../../shared/components/icon/icon';
 import { Spinner } from '../../../shared/components/spinner/spinner';
+import { IntroDirective } from '../../../shared/directives/intro.directive';
 
 /** All skills, one card per category. */
 @Component({
   selector: 'app-skills',
-  imports: [Icon, Spinner, ErrorState, EmptyState],
+  imports: [Icon, Spinner, ErrorState, EmptyState, IntroDirective],
   templateUrl: './skills.html',
   styleUrl: './skills.scss',
 })

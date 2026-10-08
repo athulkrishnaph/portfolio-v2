@@ -9,11 +9,12 @@ import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { ErrorState } from '../../../shared/components/error-state/error-state';
 import { Icon } from '../../../shared/components/icon/icon';
 import { Spinner } from '../../../shared/components/spinner/spinner';
+import { IntroDirective } from '../../../shared/directives/intro.directive';
 
 /** One project, loaded by the slug in the URL: /projects/task-flow. */
 @Component({
   selector: 'app-project-detail',
-  imports: [RouterLink, Icon, Spinner, ErrorState, EmptyState],
+  imports: [RouterLink, Icon, Spinner, ErrorState, EmptyState, IntroDirective],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.scss',
 })

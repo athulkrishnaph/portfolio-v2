@@ -6,11 +6,12 @@ import { CertificateCard } from '../../../shared/components/certificate-card/cer
 import { EmptyState } from '../../../shared/components/empty-state/empty-state';
 import { ErrorState } from '../../../shared/components/error-state/error-state';
 import { Spinner } from '../../../shared/components/spinner/spinner';
+import { IntroDirective } from '../../../shared/directives/intro.directive';
 
 /** Grid of certificates. */
 @Component({
   selector: 'app-certificates',
-  imports: [CertificateCard, Spinner, ErrorState, EmptyState],
+  imports: [CertificateCard, Spinner, ErrorState, EmptyState, IntroDirective],
   templateUrl: './certificates.html',
 })
 export class CertificatesPage {

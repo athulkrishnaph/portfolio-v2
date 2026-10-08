@@ -1,0 +1,17 @@
+// Starting state for the appIntro directive (shared/directives/intro.directive.ts).
+// Content is hidden only until the directive plays (it then adds
+// .is-intro-done). The directive adds .intro only when motion is allowed, so
+// reduced-motion visitors never see hidden content.
+
+.intro:not(.is-intro-done):not(.intro--stagger),
+.intro--stagger:not(.is-intro-done) > * {
+  visibility: hidden;
+}
+
+// Without JavaScript nothing would ever play, so never hide content then.
+@media (scripting: none) {
+  .intro:not(.is-intro-done):not(.intro--stagger),
+  .intro--stagger:not(.is-intro-done) > * {
+    visibility: visible;
+  }
+}

@@ -1,4 +1,4 @@
-<ol class="timeline">
+<ol class="timeline" appIntro="stagger" [introDelay]="0.2">
   @for (item of items(); track item.id) {
     <li class="timeline__item">
       <span class="timeline__marker" [class.timeline__marker--current]="item.current">

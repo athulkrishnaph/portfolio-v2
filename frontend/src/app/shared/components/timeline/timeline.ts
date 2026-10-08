@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 import { DateRangePipe } from '../../pipes/date-range.pipe';
 import { Icon, IconName } from '../icon/icon';
+import { IntroDirective } from '../../directives/intro.directive';
 
 /** One entry on the timeline. Experience and education are mapped to this shape. */
 export interface TimelineItem {
@@ -19,7 +20,7 @@ export interface TimelineItem {
 /** Vertical timeline used by the Experience and Education pages. */
 @Component({
   selector: 'app-timeline',
-  imports: [DateRangePipe, Icon],
+  imports: [DateRangePipe, Icon, IntroDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './timeline.html',
   styleUrl: './timeline.scss',

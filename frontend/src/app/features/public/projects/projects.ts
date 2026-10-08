@@ -7,13 +7,14 @@ import { ErrorState } from '../../../shared/components/error-state/error-state';
 import { Pagination, paginate } from '../../../shared/components/pagination/pagination';
 import { ProjectCard } from '../../../shared/components/project-card/project-card';
 import { Spinner } from '../../../shared/components/spinner/spinner';
+import { IntroDirective } from '../../../shared/directives/intro.directive';
 
 const PAGE_SIZE = 6;
 
 /** Project grid with a technology filter and pagination (both client-side). */
 @Component({
   selector: 'app-projects',
-  imports: [ProjectCard, Pagination, Spinner, ErrorState, EmptyState],
+  imports: [ProjectCard, Pagination, Spinner, ErrorState, EmptyState, IntroDirective],
   templateUrl: './projects.html',
   styleUrl: './projects.scss',
 })

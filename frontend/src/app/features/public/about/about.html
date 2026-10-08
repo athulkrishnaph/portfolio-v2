@@ -8,10 +8,10 @@
          Wide screens: photo and quick facts in the left column, "about me" on the right. -->
     <div class="about" [class.about--photo]="!!p.imageUrl">
       @if (p.imageUrl) {
-        <img class="about__photo" [src]="p.imageUrl" [alt]="'Photo of ' + p.fullName" />
+        <img class="about__photo" appIntro="zoom" [src]="p.imageUrl" [alt]="'Photo of ' + p.fullName" />
       }
 
-      <div class="about__main">
+      <div class="about__main" appIntro="stagger" [introDelay]="0.15">
         <span class="eyebrow">// about me</span>
         <h1>{{ p.fullName }}</h1>
         @if (p.headline) {
@@ -24,7 +24,7 @@
         </div>
       </div>
 
-      <aside class="about__aside">
+      <aside class="about__aside" appIntro [introDelay]="0.45">
         <div class="card card--padded about__facts">
           <h2 class="about__facts-title">Quick facts</h2>
           <ul>
