@@ -7,7 +7,7 @@
 # static frontend files and the SQL files end up in it (no Node, no Go).
 
 # ---- 1. Build the Angular frontend ------------------------------------------
-FROM node:22-alpine AS web
+FROM node:24-alpine AS web
 WORKDIR /web
 # Install dependencies first so this layer is cached until package*.json change.
 COPY frontend/package.json frontend/package-lock.json ./
